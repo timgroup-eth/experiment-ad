@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Timgroup: Experiment 1</title>
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+        <script src="./jsPsych-4.3/jquery.min.js"></script>
+        <script src="./jsPsych-4.3/jspsych.js"></script>
+        <script src="./jsPsych-4.3/plugins/jspsych-instructions.js"></script>
+        <script src="./jsPsych-4.3/plugins/jspsych-html-input-ao.js"></script>
+        <script src="./jsPsych-4.3/plugins/jspsych-fullscreen.js"></script>
+        <script src="./jsPsych-4.3/plugins/jspsych-anna.js"></script>
+        <script src="./timeline.js"></script>
+        <script src="./guiInfo.js"></script>
+        <script src="./imgData.js"></script>
+        <!-- <script> var ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";</script> -->
+        <link href="./jsPsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    </head>
+    <body>
+    </body>
+    <script>
+
+    function preLoadImages(){
+      regularPaths = imgData.regular.map(function(i){
+        return i['path']
+      });
+      fractalPaths = imgData.fractals.map(function(i){
+        return i['path']
+      });
+      imgPaths =  regularPaths.concat(fractalPaths);
+      jsPsych.preloadImages(imgPaths, function(){alert('done')})
+    };
+
+    preLoadImages()
+
+
+
+      // // settings
+      // var url = document.location.toString();
+      // var experiment_name =  url.split('/')[url.split('/').length-1].split('.')[0]; // get experiment name from url
+      // var getVars = jsPsych.data.fromURL();
+      // var uniqueId = jsPsych.data.uniqueId(16);
+      // var screen_width = screen.width;
+      // var screen_height = screen.height;
+      // var centerX = screen_width*0.5
+      // var centerY = screen_height*0.5
+
+      // var anna_block = {
+      //   type : 'anna',
+      //   items : jsPsych.randomization.shuffle(timeline.splice(10))
+      // };
+      //
+      //
+      // /* create experiment definition array */
+      // var experiment = [];
+      // experiment.push(anna_block);
+      // // experiment.push(activate_fullscreen);
+      // // experiment.push();
+      //
+      //
+      // /* start the experiment */
+      // jsPsych.init({
+      //   experiment_structure: experiment
+      // });
+    </script>
+</html>
