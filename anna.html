@@ -19,23 +19,49 @@
     </body>
     <script>
 
-    function preLoadImages(){
-      $('body').html('Loading Images');
-      var t0=Date.now();
-      regularPaths = imgData.regular.map(function(i){
-        return i['path']
-      });
-      fractalPaths = imgData.fractals.map(function(i){
-        return i['path']
-      });
-      imgPaths =  regularPaths.concat(fractalPaths);
-      jsPsych.preloadImages(imgPaths, function(){
-        var t1 = (Date.now()-t0)/1000.0
-        $('body').html('Images Loaded after: '+t1.toString()+' s')
-      })
+    Experiment = {
+      displayStr : function(str){
+        $('body').html(str);
+      },
+      imgPaths : function(){
+        regularPaths = imgData.regular.map(function(i){
+          return i['path']
+        });
+        fractalPaths = imgData.fractals.map(function(i){
+          return i['path']
+        });
+        imgPaths =  regularPaths.concat(fractalPaths);
+        return imgPaths
+      },
+      items : function(){
+        items = jsPsych.randomization.shuffle(timeline.splice(10));
+        return items
+      },
+      expTimeline:function(){
+        t = {
+          type:'anna',
+          items : this.items()
+        }
+      },
+      preLoadImages : function(){
+        this.displayStr('Loading Images');
+        var t0=Date.now();
+        var t1 = (Date.now()-t0)/1000.0;
+        jsPsych.preloadImages(this.imgPaths,this.startJsPsych(t1));
+      },
+      startJsPsych : function(t1){
+        this.displayStr('Images loaded after: '+t1.toString()+' s');
+        // Initiate jsPsych experiment ere
+        // jsPsych.init({
+        //   experiment_structure: this.expTimeline()
+        // });
+      },
+      init : function(){
+        this.preLoadImages()
+      }
     };
 
-    preLoadImages()
+    Experiment.init()
 
 
 
