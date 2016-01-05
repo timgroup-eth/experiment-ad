@@ -29,9 +29,9 @@
         return i['path']
       });
       imgPaths =  regularPaths.concat(fractalPaths);
-      var t1 = Date.now()-t0
       jsPsych.preloadImages(imgPaths, function(){
-        $('body').html('Images Loaded after: '+t1.toString()+' ms')
+        var t1 = (Date.now()-t0)/1000.0
+        $('body').html('Images Loaded after: '+t1.toString()+' s')
       })
     };
 
