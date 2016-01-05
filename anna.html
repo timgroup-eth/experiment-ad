@@ -20,6 +20,8 @@
     <script>
 
     function preLoadImages(){
+      $('body').html('Loading Images');
+      var t0=Date.now();
       regularPaths = imgData.regular.map(function(i){
         return i['path']
       });
@@ -27,7 +29,10 @@
         return i['path']
       });
       imgPaths =  regularPaths.concat(fractalPaths);
-      jsPsych.preloadImages(imgPaths, function(){alert('done')})
+      var t1 = Date.now()-t0
+      jsPsych.preloadImages(imgPaths, function(){
+        $('body').html('Images Loaded after: '+t1.toString()+' ms')
+      })
     };
 
     preLoadImages()
