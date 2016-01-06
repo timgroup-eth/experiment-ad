@@ -11,6 +11,7 @@
         <script src="./jsPsych-4.3/plugins/jspsych-anna.js"></script>
         <script src="./timeline.js"></script>
         <script src="./guiInfo.js"></script>
+        <script src="./userInfo.js"></script>
         <script src="./imgData.js"></script>
         <!-- <script> var ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";</script> -->
         <link href="./jsPsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
@@ -19,29 +20,93 @@
     </body>
     <script>
 
-    Experiment = {
+    var User = {
+      urlHasId : function(){
+        if (Object.keys(jsPsych.data.fromURL()).indexOf('id') > -1){
+          return true;
+        }else{
+          return false;
+        };
+      },
+      urlId : function(){
+        return jsPsych.data.fromURL('id')['id'];
+      },
+      checkId : function(){
+        var userInfoIds = userInfo.map(function(i){return i['UID']});
+        if (userInfoIds.indexOf(this.Id) > -1){
+          return true;
+        }else{
+          return false;
+        };
+      },
+      setId : function(){
+        if (this.urlHasId()){
+          this.Id = this.urlId();
+        }else{
+          this.Id = prompt('Bitte geben sie Ihren persoenlichen Code ein:')
+        };
+      },
+      getUserInfo : function(){
+        var tempId = this.Id
+        var t = userInfo.filter(function(i){
+          return i['UID'] == tempId});
+        return t[0];
+      },
+      init : function(){
+        this.setId()
+        var idx = 1;
+        while(!this.checkId()&&idx<3){
+          var tempId = prompt('Der angegebene persoenliche Code ist nicht korrekt. Probieren Sie es noch einmal:');
+          this.Id = tempId;
+          idx= idx+1;
+        };
+        if (idx>=3){
+          this.abort();
+        }else{
+          userObject = this.getUserInfo();
+          userObject.Status = 'ready';
+          return userObject
+        };
+      },
+      abort:function(){
+          $('body').html('Sie haben 3 mal eine Falsche User Id angegeben. Bitte kontaktieren Sie Anna Dereky.')
+          return {Status:'error'};
+      }
+    };
+
+    var Env = {
+      screenW: screen.width,
+      screenH : screen.height,
+      centX : this.screenW*0.5,
+      centY : this.screenH*0.5
+    };
+
+    var Experiment = {
+      User: User.init(),
+      Env: Env,
       displayStr : function(str){
         $('body').html(str);
       },
       imgPaths : function(){
         regularPaths = imgData.regular.map(function(i){
-          return i['path']
+          return i['path'];
         });
         fractalPaths = imgData.fractals.map(function(i){
-          return i['path']
+          return i['path'];
         });
         imgPaths =  regularPaths.concat(fractalPaths);
-        return imgPaths
+        return imgPaths;
       },
       items : function(){
         items = jsPsych.randomization.shuffle(timeline.splice(10));
-        return items
+        return items;
       },
       expTimeline:function(){
         t = {
           type:'anna',
           items : this.items()
-        }
+        };
+        return t;
       },
       preLoadImages : function(){
         this.displayStr('Loading Images');
@@ -51,13 +116,15 @@
       },
       startJsPsych : function(t1){
         this.displayStr('Images loaded after: '+t1.toString()+' s');
-        // Initiate jsPsych experiment ere
+        // Initiate jsPsych experiment here
         // jsPsych.init({
         //   experiment_structure: this.expTimeline()
         // });
       },
       init : function(){
-        this.preLoadImages()
+        if (this.User.Status=='ready'){
+          this.preLoadImages()
+        }
       }
     };
 
@@ -70,27 +137,6 @@
       // var experiment_name =  url.split('/')[url.split('/').length-1].split('.')[0]; // get experiment name from url
       // var getVars = jsPsych.data.fromURL();
       // var uniqueId = jsPsych.data.uniqueId(16);
-      // var screen_width = screen.width;
-      // var screen_height = screen.height;
-      // var centerX = screen_width*0.5
-      // var centerY = screen_height*0.5
 
-      // var anna_block = {
-      //   type : 'anna',
-      //   items : jsPsych.randomization.shuffle(timeline.splice(10))
-      // };
-      //
-      //
-      // /* create experiment definition array */
-      // var experiment = [];
-      // experiment.push(anna_block);
-      // // experiment.push(activate_fullscreen);
-      // // experiment.push();
-      //
-      //
-      // /* start the experiment */
-      // jsPsych.init({
-      //   experiment_structure: experiment
-      // });
     </script>
 </html>
