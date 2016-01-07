@@ -21,6 +21,7 @@
 			for (var i = 0; i < trials.length; i++) {
 				trials[i] = {};
 				trials[i].item = params.items[i];
+				trials[i].item = params.user;
 			}
 			return trials;
 		};
@@ -28,7 +29,6 @@
 
 
 		plugin.trial = function(display_element, trial) {
-			item = trial.item
 
 
 			// if any trial variables are functions

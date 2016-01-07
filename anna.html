@@ -49,8 +49,10 @@
       getUserInfo : function(){
         var tempId = this.Id
         var t = userInfo.filter(function(i){
-          return i['UID'] == tempId});
-        return t[0];
+          return i['UID'] == tempId})[0];
+        t.colorcode = t.colorcode.split('').map(function(i){return parseInt(i)})
+        t.arrowcode = t.arrowcode.split('').map(function(i){return parseInt(i)})
+        return t
       },
       init : function(){
         this.setId()
@@ -61,16 +63,16 @@
           idx= idx+1;
         };
         if (idx>=3){
-          this.abort();
+          this.setUserStatus('error')
+          Experiment.abort('Sie haben 3 mal eine Falsche User Id angegeben. Bitte kontaktieren Sie Anna Dereky.');
         }else{
           userObject = this.getUserInfo();
           userObject.Status = 'ready';
           return userObject
         };
       },
-      abort:function(){
-          $('body').html('Sie haben 3 mal eine Falsche User Id angegeben. Bitte kontaktieren Sie Anna Dereky.')
-          return {Status:'error'};
+      setUserStatus: function(stat){
+        this.Status = stat;
       }
     };
 
@@ -81,50 +83,112 @@
       centY : this.screenH*0.5
     };
 
+    var Img = {
+      loadedStatus : 'not loaded',
+      regular : {
+        items : imgData.regular,
+        shuffled : function(){
+          return jsPsych.randomization.shuffle(this.items);
+        },
+        paths : function(){
+          return this.items.map(function(i){
+            return i['path'];
+          });
+        }
+      },
+      fractals : {
+        items : imgData.fractals,
+        paths : function(){
+          return this.items.map(function(i){
+            return i['path'];
+          });
+        }
+      },
+      imgPaths : function(){
+        return imgPaths =  this.regular.paths().concat(this.fractals.paths());
+      },
+      preLoadImages : function(callback){
+        Experiment.displayStr('Loading Images');
+        var t0=Date.now();
+        jsPsych.preloadImages(this.imgPaths,this.imagesLoaded(t0,callback));
+      },
+      imagesLoaded : function(t0,callback){
+        var t1 = (Date.now()-t0)/1000.0;
+        this.setLoadedStatus('loaded');
+        Experiment.displayStr('Images Loaded after: '+t1.toString()+'s');
+        if (typeof callback == 'function'){
+          callback.call();
+        };
+      },
+      setLoadedStatus : function(stat){
+        this.loadedStatus = stat;
+      },
+      init : function(callback){
+        this.preLoadImages(callback);
+      }
+    };
+
+    // arrangement : 1 = P, 2=T;
+    // var values = [ [70,70,60,80,50,70,50],
+    //                [60,30,50,30,50,30,50],
+    //                [60,40,40,60,40,50,50],
+    //                [80,80,80,60,70,50,80] ]
+
     var Experiment = {
-      User: User.init(),
-      Env: Env,
+      user: User.init(),
+      env: Env,
+      img : Img,
       displayStr : function(str){
         $('body').html(str);
       },
-      imgPaths : function(){
-        regularPaths = imgData.regular.map(function(i){
-          return i['path'];
-        });
-        fractalPaths = imgData.fractals.map(function(i){
-          return i['path'];
-        });
-        imgPaths =  regularPaths.concat(fractalPaths);
-        return imgPaths;
-      },
-      items : function(){
-        items = jsPsych.randomization.shuffle(timeline.splice(10));
-        return items;
-      },
-      expTimeline:function(){
+      jsAnnaBlock:function(){
+
+        var items = jsPsych.randomization.shuffle(timeline);
+        items  = items.splice(0,10)
+        items = items.map(function(i){
+          i.imgs = [];
+          return i
+        })
+
+        var colorcode = this.user.colorcode;
+        var regularImgShuffled = this.img.regular.shuffled()
+        var fractals = this.img.fractals.items
+
+        var regIdx = 0;
+        for (i=0;i<items.length;i++){
+          for (j=0;j<items[i].arrangement.length;j++){
+            if(items[i].arrangement[j]==1){
+              items[i].imgs[j] = regularImgShuffled[regIdx]
+              regIdx++
+            }else{
+              var v = items[i].combination[j] - 1;
+              items[i].imgs[j] = fractals[colorcode.indexOf(v)]
+            };
+          };
+        };
+
         t = {
           type:'anna',
-          items : this.items()
+          items : items,
+          user : this.user,
         };
+
         return t;
       },
-      preLoadImages : function(){
-        this.displayStr('Loading Images');
-        var t0=Date.now();
-        var t1 = (Date.now()-t0)/1000.0;
-        jsPsych.preloadImages(this.imgPaths,this.startJsPsych(t1));
-      },
-      startJsPsych : function(t1){
-        this.displayStr('Images loaded after: '+t1.toString()+' s');
+      startJsPsych : function(){
+        this.jsAnnaBlock();
         // Initiate jsPsych experiment here
         // jsPsych.init({
         //   experiment_structure: this.expTimeline()
         // });
       },
+      abort : function(str){
+        this.displayStr(str)
+        throw new Error('Experiment aborted.');
+      },
       init : function(){
-        if (this.User.Status=='ready'){
-          this.preLoadImages()
-        }
+        this.img.init();
+        this.startJsPsych();
       }
     };
 
