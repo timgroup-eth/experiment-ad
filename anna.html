@@ -110,17 +110,14 @@
         return imgPaths =  this.regular.paths().concat(this.fractals.paths());
       },
       preLoadImages : function(callback){
-        Experiment.displayStr('Loading Images');
+        // Experiment.displayStr('Loading Images');
         var t0=Date.now();
-        jsPsych.preloadImages(this.imgPaths,this.imagesLoaded(t0,callback));
+        jsPsych.preloadImages(this.imgPaths,this.imagesLoaded(t0));
       },
-      imagesLoaded : function(t0,callback){
-        var t1 = (Date.now()-t0)/1000.0;
+      imagesLoaded : function(t0){
+        // var t1 = (Date.now()-t0)/1000.0;
         this.setLoadedStatus('loaded');
-        Experiment.displayStr('Images Loaded after: '+t1.toString()+'s');
-        if (typeof callback == 'function'){
-          callback.call();
-        };
+        // Experiment.displayStr('Images Loaded after: '+t1.toString()+'s');
       },
       setLoadedStatus : function(stat){
         this.loadedStatus = stat;
@@ -203,6 +200,7 @@
       },
       init : function(){
         this.img.init();
+        alert(this.img.loadedStatus)
         this.startJsPsych();
       }
     };
