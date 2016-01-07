@@ -21,7 +21,8 @@
 			for (var i = 0; i < trials.length; i++) {
 				trials[i] = {};
 				trials[i].item = params.items[i];
-				trials[i].item = params.user;
+				trials[i].user = params.user;
+				trials[i].env = params.env;
 			}
 			return trials;
 		};
@@ -30,115 +31,113 @@
 
 		plugin.trial = function(display_element, trial) {
 
+			var colorcode = trial.user.colorcode;
+			var mefirst = trial.user.mefirst;
+			var env = trial.env
+			var trialLength = trial.item.arrangement.length;
 
-			// if any trial variables are functions
-			// this evaluates the function and replaces
-			// it with the output of the function
-			var colorDic = {'red':'#FF0000','blue':'#0000FF'};
+			var imgSize = 'height:428px;width:308px;';
+			var imgStyle = 'position:absolute;margin:4px;';
+			var styles = {
+				single: {
+					imgDiv : imgSize+imgStyle+'left:'+(env.centX-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;',
+					valDiv : ''
+				},
+				double : {
+					left : {
+						imgDiv : imgSize+imgStyle+'left:'+(env.centX-250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;',
+						valDiv : ''
+					},
+					right : {
+						imgDiv : imgSize+imgStyle+'left:'+(env.centX+250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;',
+						valDiv : ''
+					}
+				}
+			};
+
 
 			// this array holds handlers from setTimeout calls
 			// that need to be cleared if the trial ends early
 			var setTimeoutHandlers = [];
-
-			// display stimulus
-			display_element.append($('<div>', {
-					text: trial.item.text,
-					style: trial.style+'color:'+colorDic[trial.color]+';'
-				}));
-
 			// store response
 			var response = {rt: -1, key: -1};
 
 			// function to end trial when it is time
-			var end_trial = function() {
-
-				// kill any remaining setTimeout handlers
-				for (var i = 0; i < setTimeoutHandlers.length; i++) {
-					clearTimeout(setTimeoutHandlers[i]);
-				}
-
-				// kill keyboard listeners
-				if(typeof keyboardListener !== 'undefined'){
-					jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-				}
-
-				function getJudgement(size,keystring){
-					if (keystring=='rightarrow' && size>0||keystring=='leftarrow' && size<0) {
-						return "correct"
-					}else{
-						return "incorrect"
-					}
-				}
-
-
-
+			var end_trial = function(response) {
+				
 				// gather the data to store for the trial
 				var trial_data = {
-					"rt": response.rt,
-					"text": trial.item.text,
-					"word_id": trial.item.word_id,
-					"color": trial.color,
-					"size_difference" : trial.item.size_difference,
-					"binary_size": 0 ? trial.item.size_difference > 0 : 1,
-					"key_code": response.key_code,
-					"key_string": response.key_string,
-					"trial_idx" : trialIdx,
-					"repetition" : repetition,
-					"size_judgement": getJudgement(trial.item.size_difference,response.key_string)
+					"rt": response[0].rt,
+					"key_code": response[0].key_code,
+					"key_string": response[0].key_string,
 				};
-
 				jsPsych.data.write(trial_data);
-
 				// clear the display
 				display_element.html('');
-
 				// move on to the next trial
 				jsPsych.finishTrial();
 			};
 
+			var kbResps = []
 			// function to handle responses by the subject
-			var after_response = function(info) {
-
-				// after a valid response, the stimulus will have the CSS class 'responded'
-				// which can be used to provide visual feedback that a response was recorded
-				$("#jspsych-single-stim-stimulus").addClass('responded');
-
-				// only record the first response
-				if(response.key == -1){
-					response = info;
-				}
-
-				if (trial.response_ends_trial) {
-					end_trial();
-				}
+			var keyboardCallback = function(kbInfo) {
+				kbResps.push(kbInfo)
+				if (trialLength==1){
+					jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+					// give_feedback()
+					end_trial(kbResps)
+				}else{
+					if (kbResps.length==1){
+						if(kbInfo.key_string=='leftarrow'){
+							$('#rightImgDiv').remove();
+							$('#leftImgDiv').css('border','solid 4px rgb(60,255,0)');
+							$('#leftImgDiv').css('margin','0px');
+						}else{
+							$('#leftImgDiv').remove();
+							$('#rightImgDiv').css('border','solid 4px rgb(60,255,0)');
+							$('#rightImgDiv').css('margin','0px');
+						}
+					}else{
+						jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+						// give_feedback()
+						end_trial(kbResps)
+					}
+				};
 			};
 
+			//display stimulus
+			if (trial.item.arrangement.length==1){
+				display_element.html(
+				"<div id='singleImgDiv' style='"+
+					styles.single.imgDiv+
+					"background-image:url(./"+
+					trial.item.imgs[0].path+
+					");'></div>"
+				);
+			}else{
+				display_element.html(
+				"<div id='leftImgDiv' style='"+
+					styles.double.left.imgDiv+
+					"background-image:url(./"+
+					trial.item.imgs[0].path+
+					");'></div>"+
+
+				"<div id='rightImgDiv' style='"+
+					styles.double.right.imgDiv+
+					"background-image:url(./"+
+					trial.item.imgs[1].path+
+					");'></div>"
+				);
+			}
+
 			// start the response listener
-			if(JSON.stringify(trial.choices) != JSON.stringify(["none"])) {
-				var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-					callback_function: after_response,
-					valid_responses: [37,39],
-					rt_method: 'date',
-					persist: false,
-					allow_held_key: false,
-				});
-			}
-
-
-			// end trial if time limit is set
-			if (trial.timing_response > 0) {
-				var t2 = setTimeout(function() {
-					end_trial();
-				}, trial.timing_response);
-				setTimeoutHandlers.push(t2);
-			}
-			if (trial.timing_stim > 0) {
-				var t3 = setTimeout(function() {
-					display_element.html('');
-				}, trial.timing_stim);
-				setTimeoutHandlers.push(t3);
-			}
-
+			var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+				callback_function: keyboardCallback,
+				valid_responses: [37,39],
+				rt_method: 'date',
+				persist: true,
+				allow_held_key: false,
+			});
 		};
 
 		return plugin;
