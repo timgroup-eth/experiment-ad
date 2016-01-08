@@ -15,7 +15,7 @@
 
 		plugin.create = function(params) {
 
-			params = jsPsych.pluginAPI.enforceArray(params, ['items', 'choices']);
+			params = jsPsych.pluginAPI.enforceArray(params);
 
 			var trials = new Array(params.items.length);
 			for (var i = 0; i < trials.length; i++) {
@@ -26,8 +26,6 @@
 			}
 			return trials;
 		};
-
-
 
 		plugin.trial = function(display_element, trial) {
 
