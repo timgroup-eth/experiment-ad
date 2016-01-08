@@ -111,19 +111,19 @@
       preLoadImages : function(callback){
         Experiment.displayStr('Loading Images');
         var allImgPaths = this.imgPaths();
-        var t0=Date.now();
+        this.t0=Date.now();
         jsPsych.preloadImages(allImgPaths,
-          this.imagesLoaded(t0),
-          function(i){$('body').html((i/allImgPaths.length*100).toString()+' Images loaded')});
+          function(){Experiment.img.imagesLoaded()},
+          function(i){$('body').html(parseInt(i/allImgPaths.length*100).toString()+' Images loaded')});
       },
       imagesLoaded : function(t0){
-        var t1 = (Date.now()-t0)/1000.0;
-        this.loadedStatus = "loaded"
+        var t1 = (Date.now()-this.t0)/1000.0;
+        Experiment.img.loadedStatus = "loaded"
         Experiment.displayStr('Images Loaded after: '+t1.toString()+'s');
       },
-      init : function(callback){
+      init : function(){
         this.loadedStatus = 'not loaded'
-        this.preLoadImages(callback);
+        this.preLoadImages();
       }
     };
 
