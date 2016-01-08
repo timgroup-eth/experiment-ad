@@ -119,11 +119,11 @@
       },
       imagesLoaded : function(t0){
         var t1 = (Date.now()-this.t0)/1000.0;
-        Experiment.img.loadedStatus = "loaded"
+        this.loadedStatus = "loaded";
         Experiment.displayStr('Images Loaded after: '+t1.toString()+'s');
       },
       init : function(){
-        this.loadedStatus = 'not loaded'
+        this.loadedStatus = 'not loaded';
         this.preLoadImages();
       }
     };
@@ -196,6 +196,7 @@
         throw new Error('Experiment aborted.');
       },
       waitForImgs : function(){
+        console.log(Experiment.img.loadedStatus)
         if(Experiment.img.loadedStatus == 'not loaded'){
           setTimeout(Experiment.waitForImgs,1000);
         }else{
