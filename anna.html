@@ -113,8 +113,9 @@
         var allImgPaths = this.imgPaths();
         this.t0=Date.now();
         jsPsych.preloadImages(allImgPaths,
-          function(){Experiment.img.imagesLoaded()},
-          function(i){$('body').html(parseInt(i/allImgPaths.length*100).toString()+' Images loaded')});
+          function(){Experiment.img.imagesLoaded();
+          // },function(i){$('body').html(parseInt(i/allImgPaths.length*100).toString()+' Images loaded');
+        });
       },
       imagesLoaded : function(t0){
         var t1 = (Date.now()-this.t0)/1000.0;
@@ -182,30 +183,28 @@
 
         return t;
       },
-      // startJsPsych : function(){
-      //   console.log(this.img.loadedStatus)
-      //   var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
-      //   $('body').html(fsDiv)
-      //   if(this.img.loadedStatus=='loaded'){
-      //     console.log(this.img.loadedStatus)
-      //     jsPsych.init({
-      //       display_element: $('#fsDiv'),
-      //       experiment_structure: [this.jsAnnaBlock()]
-      //     });
-      //   }else {
-      //     setTimeout(this.startJsPsych(), 1000); // check again in a second
-      //   };
-      // },
+      startJsPsych : function(){
+        console.log(this.img.loadedStatus)
+        var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
+        $('body').html(fsDiv)
+        if(this.img.loadedStatus=='loaded'){
+          console.log(this.img.loadedStatus)
+          jsPsych.init({
+            display_element: $('#fsDiv'),
+            experiment_structure: [this.jsAnnaBlock()]
+          });
+        }else {
+          setTimeout(this.startJsPsych(), 1000); // check again in a second
+        };
+      },
       cancelExperiment : function(str){
         this.displayStr(str)
         throw new Error('Experiment aborted.');
       },
       init : function(){
         this.user = this.user.init();
-        console.log(this.img);
         this.img.init();
-        console.log(this.img);
-        // this.startJsPsych();
+        this.startJsPsych();
       }
     };
     Experiment.init()
