@@ -64,7 +64,7 @@
         };
         if (idx>=3){
           this.setUserStatus('error')
-          Experiment.cancelExperiment('Sie haben 3 mal eine inkorrekte User Id angegeben. Bitte kontaktieren Sie Anna Dereky.');
+          Experiment.abort('Sie haben 3 mal eine inkorrekte User Id angegeben. Bitte kontaktieren Sie Anna Dereky.');
         }else{
           userObject = this.getUserInfo();
           userObject.Status = 'ready';
@@ -184,27 +184,28 @@
         return t;
       },
       startJsPsych : function(){
-        console.log(this.img.loadedStatus)
         var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
         $('body').html(fsDiv)
-        if(this.img.loadedStatus=='loaded'){
-          console.log(this.img.loadedStatus)
-          jsPsych.init({
-            display_element: $('#fsDiv'),
-            experiment_structure: [this.jsAnnaBlock()]
-          });
-        }else {
-          setTimeout(this.startJsPsych(), 1000); // check again in a second
-        };
+        jsPsych.init({
+          display_element: $('#fsDiv'),
+          experiment_structure: [this.jsAnnaBlock()]
+        });
       },
-      cancelExperiment : function(str){
+      abort : function(str){
         this.displayStr(str)
         throw new Error('Experiment aborted.');
+      },
+      waitForImgs : function(){
+        if(Experiment.img.loadedStatus == 'not loaded'){
+          setTimeout(Experiment.waitForImgs,1000);
+        }else{
+          Experiment.startJsPsych()
+        };
       },
       init : function(){
         this.user = this.user.init();
         this.img.init();
-        this.startJsPsych();
+        this.waitForImgs();
       }
     };
     Experiment.init()
