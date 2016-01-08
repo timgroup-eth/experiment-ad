@@ -147,11 +147,8 @@
       displayStr : function(str){
         $('#fsDiv').html(str);
       },
-      jsAnnaBlock:function(){
-
+      getItems:function(){
         var items = jsPsych.randomization.shuffle(timeline);
-
-        // items  = items.splice(0,10)
         items = items.map(function(i){
           if (typeof i.arrangement != 'object'){
             i.arrangement = [i.arrangement]
@@ -161,7 +158,7 @@
           };
           i.imgs = [];
           return i
-        })
+        });
 
         var colorcode = this.user.colorcode;
         var regularImgShuffled = this.img.regular.shuffled()
@@ -179,10 +176,13 @@
             };
           };
         };
+        return items
+      },
+      jsAnnaBlock:function(){
 
         t = {
           type:'anna',
-          items : items,
+          items : this.annaItems,
           user : this.user,
           env : this.env
         };
@@ -214,6 +214,7 @@
       init : function(){
         this.user = this.user.init();
         this.img.init();
+        this.annaItems = this.getItems()
         this.waitForImgs();
       }
     };
