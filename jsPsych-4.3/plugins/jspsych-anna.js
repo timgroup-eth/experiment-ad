@@ -30,15 +30,107 @@
 		plugin.trial = function(display_element, trial) {
 
 			var colorcode = trial.user.colorcode;
+			var arrowcode = trial.user.arrowcode;
 			var mefirst = trial.user.mefirst;
 			var env = trial.env;
 			var trialLength = trial.item.arrangement.length;
-			var interTrialInterval = 700;
+			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
 			var imgs = trial.item.imgs;
+			var mf = trial.user.mefirst;
+
+			var conf = {
+				p : trial.item.p,
+				D : {
+					'0-1' : [1,2,3,4],
+					'0-0' : [2,1,4,3],
+					'1-1' : [3,4,1,2],
+					'1-0' : [4,3,2,1],
+					'00-1' : [1,2,3,4,5,6,7,8],
+					'00-0' : [2,1,4,3,6,7,8,7],
+					'01-1' : [1,2,3,4,7,8,5,6],
+					'01-0' : [2,1,4,3,8,7,6,5],
+					'10-1' : [3,4,1,2,5,6,7,8],
+					'10-0' : [4,3,2,1,6,5,8,7],
+					'11-1' : [3,4,1,2,7,8,5,6],
+					'11-0' : [4,3,2,1,8,7,6,5]
+				},
+				R : {
+					'0' : [1,2,3,4],
+					'1' : [3,4,1,2],
+					'00' : [1,2,3,4,5,6,7,8],
+					'01' : [1,2,3,4,7,8,5,6],
+					'10' : [3,4,1,2,5,6,7,8],
+					'11' : [3,4,1,2,7,8,5,6]
+				},
+				rk : function(){
+					return trial.item.combination.map(function(i){ return arrowcode[colorcode.indexOf(i-1)] }).join('').toString();
+				},
+				dk : function(){
+					return [this.rk(),mf].join('-').toString()
+				},
+				minusOne : function(dic){
+					var dicKeys = Object.keys(dic);
+					for(i=0;i<dicKeys.length;i++){
+						dic[dicKeys[i]]=dic[dicKeys[i]].map(function(j){return j-1});
+					};
+					return dic
+				},
+				sortR : function(){
+					var t = this.minusOne(this.R);
+					return t[this.rk()];
+				},
+				sortD : function(){
+					var t = this.minusOne(this.D);
+					return t[this.dk()];
+				},
+				pr : function(){
+					var sR = this.sortR();
+					console.log(sR)
+					var p = this.p;
+					return p.map(function(val,i){
+						return p[sR[i]]});
+				},
+				pd : function(){
+					var sR = this.sortD();
+					var p = this.p;
+					return p.map(function(val,i){
+						return p[sR[i]]});
+				}
+			};
+
+			var keyMap = {
+				'leftarrow' : {
+					s: 0,
+					c: 1
+				},
+				'rightarrow' : {
+					s: 2,
+					c: 3
+				},
+				'leftarrow-leftarrow' : {
+					s: 0,
+					c: 1
+				},
+				'leftarrow-rightarrow': {
+					s: 2,
+					c: 3
+				},
+				'rightarrow-leftarrow' : {
+					s: 4,
+					c: 5
+				},
+				'rightarrow-rightarrow': {
+					s: 6,
+					c: 7
+				}
+			}
+
+			var pr = conf.pr();
+			var pd = conf.pd();
 
 			var imgSize = 'height:420px;width:300px;background-size: 300px 420px;';
-			var imgStyle = 'position:absolute;margin:4px;';
+			var imgStyle = 'position:absolute;margin:8px;';
 			var valStyle = 'position:absolute;height:32px;width:100px;text-align:center;font-size:25px;font-weight:bold;'
 			var styles = {
 				valDivL : valStyle+'top:190px;left:20px;',
@@ -53,12 +145,10 @@
 					right : {
 						imgDiv : imgSize+imgStyle+'left:'+(env.centX+250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;'
 					}
-				}
+				},
+				feedbackDiv : 'position:absolute;font-size:20px;font-weight:bold;top:300px;left:'+(env.centX-100).toString()+'px;'
 			};
 
-
-			// store response
-			var response = {rt: -1, key: -1};
 			timeOutHandlers = []
 
 			// function to end trial when it is time
@@ -66,20 +156,34 @@
 				for(t=0;t<timeOutHandlers.length;t++){ clearTimeout(timeOutHandlers[t])};
 				// give_feedback()
 				jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-
+				keyMapKey = response.map(function(i){return i.key_string}).join('-')
 
 				// gather the data to store for the trial
 				var trial_data = {
-					"rt": response[0].rt,
-					"key_code": response[0].key_code,
-					"key_string": response[0].key_string,
+					responseroot : response[0].key_string,
+					response2nd : trialLength==2 ? response[1].key_string : '',
+					timingroot : response[0].rt/1000.0,
+					timing2nd :  trialLength==2 ? (response[1].rt - response[0].rt) / 1000.0 : '',
+					payoffS : pr[keyMap[keyMapKey]['s']],
+					payoffC : pr[keyMap[keyMapKey]['c']],
+					p : pr
 				};
+
+
+				console.log(trial_data.payoffS)
 				jsPsych.data.write(trial_data);
+				feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
+											"<p>Feedback</p>"+
+											"<p>Self: "+trial_data.payoffS.toString()+"</p>"+
+											"<p>Charity: "+trial_data.payoffC.toString()+"</p>"+
+											"</div>"
 				// clear the display
-				display_element.html('');
+				display_element.html(feedBackStr);
+
 				// move on to the next trial
 				timeOutHandlers.push(setTimeout(jsPsych.finishTrial,interTrialInterval));
 			};
+
 
 			var kbResps = []
 			// function to handle responses by the subject
@@ -92,11 +196,11 @@
 					if (kbResps.length==1){
 						if(kbInfo.key_string=='leftarrow'){
 							$('#rightImgDiv').remove();
-							$('#leftImgDiv').css('border','solid 4px rgb(60,255,0)');
+							$('#leftImgDiv').css('border','solid 8px rgb(60,255,0)');
 							$('#leftImgDiv').css('margin','0px');
 						}else{
 							$('#leftImgDiv').remove();
-							$('#rightImgDiv').css('border','solid 4px rgb(60,255,0)');
+							$('#rightImgDiv').css('border','solid 8px rgb(60,255,0)');
 							$('#rightImgDiv').css('margin','0px');
 						}
 					}else{
@@ -121,7 +225,6 @@
 					"background-image:url(./"+
 					imgs[0].path+
 					");'></div>"+
-
 				"<div id='rightImgDiv' class='imgDiv' style='"+
 					styles.double.right.imgDiv+
 					"background-image:url(./"+
@@ -133,12 +236,14 @@
 			var imgDivs = document.getElementsByClassName('imgDiv')
 			for(i=0;i<imgDivs.length;i++){
 				if (trial.item.arrangement[i]=='1'){ //1=P
+					var s1 = [ pd[(i*4)], pd[(i*4)+1] ].join('/')
+					var s2 = [ pd[(i*4)+2], pd[(i*4)+3] ].join('/')
 					imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:"+
 						imgs[i].bgColor+";>\
-						<p style='margin:auto;color:"+imgs[i].textColor+";'>##/##</p></div>"+
+						<p style='margin:auto;color:"+imgs[i].textColor+";'>"+s1+"</p></div>"+
 						"<div id='singleVal' style="+styles.valDivR+"background-color:"+
 						imgs[i].bgColor+";>\
-						<p style='margin:auto;color:"+imgs[i].textColor+";'>##/##</p></div>";
+						<p style='margin:auto;color:"+imgs[i].textColor+";'>"+s2+"</p></div>";
 				}else{
 					imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:black;>\
 						<p style='margin:auto;color:white;'>##/##</p></div>"+

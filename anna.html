@@ -65,7 +65,8 @@
         };
         if (idx>=3){
           this.setUserStatus('error')
-          Experiment.abort('Sie haben 3 mal eine inkorrekte User Id angegeben. Bitte kontaktieren Sie Anna Dereky.');
+          Experiment.displayStr('Sie haben 3 mal eine inkorrekte User Id angegeben. Bitte kontaktieren Sie Anna Dereky.');
+          Experiment.abort()
         }else{
           userObject = this.getUserInfo();
           userObject.Status = 'ready';
@@ -161,18 +162,18 @@
         });
 
         var colorcode = this.user.colorcode;
-        var regularImgShuffled = this.img.regular.shuffled()
-        var fractals = this.img.fractals.items
+        var regularImgShuffled = this.img.regular.shuffled();
+        var fractals = this.img.fractals.items;
 
         var regIdx = 0;
         for (i=0;i<items.length;i++){
           for (j=0;j<items[i].arrangement.length;j++){
             if(items[i].arrangement[j]==1||items[i].isfoil==1){
-              items[i].imgs[j] = regularImgShuffled[regIdx]
+              items[i].imgs[j] = regularImgShuffled[regIdx];
               regIdx++
             }else{
               var v = items[i].combination[j] - 1;
-              items[i].imgs[j] = fractals[colorcode.indexOf(v)]
+              items[i].imgs[j] = fractals[colorcode.indexOf(v)];
             };
           };
         };
@@ -190,7 +191,8 @@
         return t;
       },
       backgroundDiv : function(){
-        var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
+        var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;\
+                    height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
         $('body').html(fsDiv);
       },
       startJsPsych : function(){
