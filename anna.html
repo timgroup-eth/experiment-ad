@@ -120,7 +120,6 @@
         var t1 = (Date.now()-t0)/1000.0;
         this.loadedStatus = "loaded"
         Experiment.displayStr('Images Loaded after: '+t1.toString()+'s');
-        throw new error('loaded')
       },
       init : function(callback){
         this.loadedStatus = 'not loaded'
