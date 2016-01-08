@@ -111,11 +111,10 @@
       preLoadImages : function(callback){
         Experiment.displayStr('Loading Images');
         var allImgPaths = this.imgPaths();
-        console.log(allImgPaths)
         var t0=Date.now();
         jsPsych.preloadImages(allImgPaths,
-          function(t0){Experiment.img.imagesLoaded(t0)},
-          function(i){$('body').html(i.toString()+' Images loaded')});
+          this.imagesLoaded(t0),
+          function(i){$('body').html((i/allImgPaths.length*100).toString()+' Images loaded')});
       },
       imagesLoaded : function(t0){
         var t1 = (Date.now()-t0)/1000.0;
