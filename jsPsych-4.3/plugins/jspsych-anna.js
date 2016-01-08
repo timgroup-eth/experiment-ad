@@ -35,22 +35,23 @@
 			var trialLength = trial.item.arrangement.length;
 			var interTrialInterval = 700;
 			var interResponseInterval = 500;
+			var imgs = trial.item.imgs;
 
 			var imgSize = 'height:420px;width:300px;background-size: 300px 420px;';
 			var imgStyle = 'position:absolute;margin:4px;';
+			var valStyle = 'position:absolute;height:32px;width:100px;text-align:center;font-size:25px;font-weight:bold;'
 			var styles = {
+				valDivL : valStyle+'top:190px;left:20px;',
+				valDivR : valStyle+'top:190px;left:180px;',
 				single: {
-					imgDiv : imgSize+imgStyle+'left:'+(env.centX-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;',
-					valDiv : ''
+					imgDiv : imgSize+imgStyle+'left:'+(env.centX-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;'
 				},
 				double : {
 					left : {
-						imgDiv : imgSize+imgStyle+'left:'+(env.centX-250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;',
-						valDiv : ''
+						imgDiv : imgSize+imgStyle+'left:'+(env.centX-250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;'
 					},
 					right : {
-						imgDiv : imgSize+imgStyle+'left:'+(env.centX+250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;',
-						valDiv : ''
+						imgDiv : imgSize+imgStyle+'left:'+(env.centX+250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;'
 					}
 				}
 			};
@@ -104,30 +105,47 @@
 				};
 			};
 
-			//display stimulus
+			//display images
 			if (trial.item.arrangement.length==1){
 				display_element.html(
-				"<div id='singleImgDiv' style='"+
+				"<div id='singleImgDiv' class='imgDiv' style='"+
 					styles.single.imgDiv+
 					"background-image:url(./"+
-					trial.item.imgs[0].path+
+					imgs[0].path+
 					");'></div>"
 				);
 			}else{
 				display_element.html(
-				"<div id='leftImgDiv' style='"+
+				"<div id='leftImgDiv' class='imgDiv' style='"+
 					styles.double.left.imgDiv+
 					"background-image:url(./"+
-					trial.item.imgs[0].path+
+					imgs[0].path+
 					");'></div>"+
 
-				"<div id='rightImgDiv' style='"+
+				"<div id='rightImgDiv' class='imgDiv' style='"+
 					styles.double.right.imgDiv+
 					"background-image:url(./"+
-					trial.item.imgs[1].path+
+					imgs[1].path+
 					");'></div>"
 				);
 			}
+			// display values
+			var imgDivs = document.getElementsByClassName('imgDiv')
+			for(i=0;i<imgDivs.length;i++){
+				if (trial.item.arrangement[i]=='1'){ //1=P
+					imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:"+
+						imgs[i].bgColor+";>\
+						<p style='margin:auto;color:"+imgs[i].textColor+";'>##/##</p></div>"+
+						"<div id='singleVal' style="+styles.valDivR+"background-color:"+
+						imgs[i].bgColor+";>\
+						<p style='margin:auto;color:"+imgs[i].textColor+";'>##/##</p></div>";
+				}else{
+					imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:black;>\
+						<p style='margin:auto;color:white;'>##/##</p></div>"+
+						"<div id='singleVal' style="+styles.valDivR+"background-color:black;>\
+						<p style='margin:auto;color:white;'>##/##</p></div>";
+				}
+			};
 
 			// start the response listener
 			var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
