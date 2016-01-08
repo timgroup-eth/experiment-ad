@@ -33,10 +33,11 @@
 
 			var colorcode = trial.user.colorcode;
 			var mefirst = trial.user.mefirst;
-			var env = trial.env
+			var env = trial.env;
 			var trialLength = trial.item.arrangement.length;
+			var interTrialInterval = 1000;
 
-			var imgSize = 'height:428px;width:308px;';
+			var imgSize = 'height:420px;width:300px;background-size: 300px 420px;';
 			var imgStyle = 'position:absolute;margin:4px;';
 			var styles = {
 				single: {
@@ -56,15 +57,15 @@
 			};
 
 
-			// this array holds handlers from setTimeout calls
-			// that need to be cleared if the trial ends early
-			var setTimeoutHandlers = [];
 			// store response
 			var response = {rt: -1, key: -1};
 
 			// function to end trial when it is time
 			var end_trial = function(response) {
-				
+				// give_feedback()
+				jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+
+
 				// gather the data to store for the trial
 				var trial_data = {
 					"rt": response[0].rt,
@@ -75,7 +76,7 @@
 				// clear the display
 				display_element.html('');
 				// move on to the next trial
-				jsPsych.finishTrial();
+				setTimeout(jsPsych.finishTrial(),interTrialInterval)
 			};
 
 			var kbResps = []
@@ -83,8 +84,6 @@
 			var keyboardCallback = function(kbInfo) {
 				kbResps.push(kbInfo)
 				if (trialLength==1){
-					jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-					// give_feedback()
 					end_trial(kbResps)
 				}else{
 					if (kbResps.length==1){
@@ -98,8 +97,6 @@
 							$('#rightImgDiv').css('margin','0px');
 						}
 					}else{
-						jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-						// give_feedback()
 						end_trial(kbResps)
 					}
 				};
