@@ -15,6 +15,7 @@
         <script src="./imgData.js"></script>
         <!-- <script> var ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";</script> -->
         <link href="./jsPsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+        <link href="./loadingSmiley.css" rel="stylesheet" type="text/css"></link>
     </head>
     <body>
     </body>
@@ -108,8 +109,14 @@
       imgPaths : function(){
         return imgPaths =  this.regular.paths().concat(this.fractals.paths());
       },
+      loadingSmiley : function(){
+        Experiment.backgroundDiv()
+        var smileyDivs = '<div id="loadingSmiley" style="margin-top:270px;"><center><p>Loading</p>\
+          <div class="leftEye"></div><div class="rightEye"></div><div class="mouth"></div></center></div>';
+        Experiment.displayStr(smileyDivs)
+      },
       preLoadImages : function(callback){
-        Experiment.displayStr('Loading Images');
+        this.loadingSmiley()
         var allImgPaths = this.imgPaths();
         this.t0=Date.now();
         jsPsych.preloadImages(allImgPaths,
@@ -120,7 +127,6 @@
       imagesLoaded : function(t0){
         var t1 = (Date.now()-this.t0)/1000.0;
         this.loadedStatus = "loaded";
-        Experiment.displayStr('Images Loaded after: '+t1.toString()+'s');
       },
       init : function(){
         this.loadedStatus = 'not loaded';
@@ -139,7 +145,7 @@
       env: Env,
       img : Img,
       displayStr : function(str){
-        $('body').html(str);
+        $('#fsDiv').html(str);
       },
       jsAnnaBlock:function(){
 
@@ -183,9 +189,12 @@
 
         return t;
       },
-      startJsPsych : function(){
+      backgroundDiv : function(){
         var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
-        $('body').html(fsDiv)
+        $('body').html(fsDiv);
+      },
+      startJsPsych : function(){
+        this.backgroundDiv()
         jsPsych.init({
           display_element: $('#fsDiv'),
           experiment_structure: [this.jsAnnaBlock()]
@@ -196,7 +205,6 @@
         throw new Error('Experiment aborted.');
       },
       waitForImgs : function(){
-        console.log(Experiment.img.loadedStatus)
         if(Experiment.img.loadedStatus == 'not loaded'){
           setTimeout(Experiment.waitForImgs,1000);
         }else{
@@ -209,6 +217,7 @@
         this.waitForImgs();
       }
     };
+
     Experiment.init()
 
     </script>

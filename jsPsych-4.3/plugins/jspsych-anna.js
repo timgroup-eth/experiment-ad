@@ -33,7 +33,8 @@
 			var mefirst = trial.user.mefirst;
 			var env = trial.env;
 			var trialLength = trial.item.arrangement.length;
-			var interTrialInterval = 1000;
+			var interTrialInterval = 700;
+			var interResponseInterval = 500;
 
 			var imgSize = 'height:420px;width:300px;background-size: 300px 420px;';
 			var imgStyle = 'position:absolute;margin:4px;';
@@ -57,9 +58,11 @@
 
 			// store response
 			var response = {rt: -1, key: -1};
+			timeOutHandlers = []
 
 			// function to end trial when it is time
 			var end_trial = function(response) {
+				for(t=0;t<timeOutHandlers.length;t++){ clearTimeout(timeOutHandlers[t])};
 				// give_feedback()
 				jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
 
@@ -74,7 +77,7 @@
 				// clear the display
 				display_element.html('');
 				// move on to the next trial
-				setTimeout(jsPsych.finishTrial(),interTrialInterval)
+				timeOutHandlers.push(setTimeout(jsPsych.finishTrial,interTrialInterval));
 			};
 
 			var kbResps = []
@@ -84,6 +87,7 @@
 				if (trialLength==1){
 					end_trial(kbResps)
 				}else{
+					timeOutHandlers.push(setTimeout(end_trial,interResponseInterval,kbResps));
 					if (kbResps.length==1){
 						if(kbInfo.key_string=='leftarrow'){
 							$('#rightImgDiv').remove();
