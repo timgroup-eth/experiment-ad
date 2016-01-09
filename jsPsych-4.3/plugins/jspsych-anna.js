@@ -161,16 +161,16 @@
 				// gather the data to store for the trial
 				var trial_data = {
 					responseroot : response[0].key_string,
-					response2nd : trialLength==2 ? response[1].key_string : '',
+					response2nd : response.length==2 ? response[1].key_string : -1,
 					timingroot : response[0].rt/1000.0,
-					timing2nd :  trialLength==2 ? (response[1].rt - response[0].rt) / 1000.0 : '',
+					timing2nd :  response.length==2 ? (response[1].rt - response[0].rt) / 1000.0 : -1,
 					payoffS : pr[keyMap[keyMapKey]['s']],
 					payoffC : pr[keyMap[keyMapKey]['c']],
 					p : pr
 				};
 
 
-				console.log(trial_data.payoffS)
+				console.log(trial_data)
 				jsPsych.data.write(trial_data);
 				feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
 											"<p>Feedback</p>"+
