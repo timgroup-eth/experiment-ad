@@ -86,7 +86,6 @@
 				},
 				pr : function(){
 					var sR = this.sortR();
-					console.log(sR)
 					var p = this.p;
 					return p.map(function(val,i){
 						return p[sR[i]]});
@@ -96,6 +95,14 @@
 					var p = this.p;
 					return p.map(function(val,i){
 						return p[sR[i]]});
+				},
+				meFirstSort : function(){
+					if (trial.item.mefirst == 0){
+						var mfSort = [2,1,4,3,6,7,8,7].map(function(j){return j-1});
+					}else{
+						var mfSort = [1,2,3,4,5,6,7,8].map(function(j){return j-1});
+					}
+					return mfSort;
 				}
 			};
 
@@ -126,8 +133,8 @@
 				}
 			}
 
-			var pr = conf.pr();
-			var pd = conf.pd();
+			var pr = trial.item.isfoil==0 ? conf.pr() : trial.item.p;
+			var pd = trial.item.isfoil==0 ? conf.pd() : trial.item.p.map(function(i,val){return trial.item.p[conf.meFirstSort[i]]})
 
 			var imgSize = 'height:420px;width:300px;background-size: 300px 420px;';
 			var imgStyle = 'position:absolute;margin:8px;';
@@ -166,22 +173,54 @@
 					timing2nd :  response.length==2 ? (response[1].rt - response[0].rt) / 1000.0 : -1,
 					payoffS : pr[keyMap[keyMapKey]['s']],
 					payoffC : pr[keyMap[keyMapKey]['c']],
-					p : pr
+					pNew : pr.join()
 				};
 
+				JSON.flatten = function(data) {
+					var result = {};
+			    function recurse (cur, prop) {
+			        if (Object(cur) !== cur) {
+			            result[prop] = cur;
+			        } else if (Array.isArray(cur)) {
+			             for(var i=0, l=cur.length; i<l; i++)
+			                 recurse(cur[i], prop + "[" + i + "]");
+			            if (l == 0)
+			                result[prop] = [];
+			        } else {
+			            var isEmpty = true;
+			            for (var p in cur) {
+			                isEmpty = false;
+			                recurse(cur[p], prop ? prop+"."+p : p);
+			            }
+			            if (isEmpty && prop)
+			                result[prop] = {};
+			        }
+			    }
+			    recurse(data, "");
+			    return result;
+				}
 
+				var flatItem = JSON.flatten(trial.item);
+				for (var key in flatItem){
+					trial_data[key] = flatItem[key];
+				};
 				console.log(trial_data)
 				jsPsych.data.write(trial_data);
-				feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
-											"<p>Feedback</p>"+
-											"<p>Self: "+trial_data.payoffS.toString()+"</p>"+
-											"<p>Charity: "+trial_data.payoffC.toString()+"</p>"+
-											"</div>"
-				// clear the display
-				display_element.html(feedBackStr);
+
+				if (response.length==trialLength){
+					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
+														"<p>Feedback</p>"+
+														"<p>Self: "+trial_data.payoffS.toString()+"</p>"+
+														"<p>Charity: "+trial_data.payoffC.toString()+"</p>"+
+														"</div>"
+					// clear the display
+					display_element.html(feedBackStr);
+				}else{
+					display_element.html('');
+				}
 
 				// move on to the next trial
-				timeOutHandlers.push(setTimeout(jsPsych.finishTrial,interTrialInterval));
+				setTimeout(jsPsych.finishTrial,interTrialInterval);
 			};
 
 
@@ -210,7 +249,8 @@
 			};
 
 			//display images
-			if (trial.item.arrangement.length==1){
+			var displayStimuli = function(){
+				if (trial.item.arrangement.length==1){
 				display_element.html(
 				"<div id='singleImgDiv' class='imgDiv' style='"+
 					styles.single.imgDiv+
@@ -218,39 +258,42 @@
 					imgs[0].path+
 					");'></div>"
 				);
-			}else{
-				display_element.html(
-				"<div id='leftImgDiv' class='imgDiv' style='"+
-					styles.double.left.imgDiv+
-					"background-image:url(./"+
-					imgs[0].path+
-					");'></div>"+
-				"<div id='rightImgDiv' class='imgDiv' style='"+
-					styles.double.right.imgDiv+
-					"background-image:url(./"+
-					imgs[1].path+
-					");'></div>"
-				);
-			}
-			// display values
-			var imgDivs = document.getElementsByClassName('imgDiv')
-			for(i=0;i<imgDivs.length;i++){
-				if (trial.item.arrangement[i]=='1'){ //1=P
-					var s1 = [ pd[(i*4)], pd[(i*4)+1] ].join('/')
-					var s2 = [ pd[(i*4)+2], pd[(i*4)+3] ].join('/')
-					imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:"+
-						imgs[i].bgColor+";>\
-						<p style='margin:auto;color:"+imgs[i].textColor+";'>"+s1+"</p></div>"+
-						"<div id='singleVal' style="+styles.valDivR+"background-color:"+
-						imgs[i].bgColor+";>\
-						<p style='margin:auto;color:"+imgs[i].textColor+";'>"+s2+"</p></div>";
 				}else{
-					imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:black;>\
-						<p style='margin:auto;color:white;'>##/##</p></div>"+
-						"<div id='singleVal' style="+styles.valDivR+"background-color:black;>\
-						<p style='margin:auto;color:white;'>##/##</p></div>";
+					display_element.html(
+					"<div id='leftImgDiv' class='imgDiv' style='"+
+						styles.double.left.imgDiv+
+						"background-image:url(./"+
+						imgs[0].path+
+						");'></div>"+
+					"<div id='rightImgDiv' class='imgDiv' style='"+
+						styles.double.right.imgDiv+
+						"background-image:url(./"+
+						imgs[1].path+
+						");'></div>"
+					);
+				}
+				// display values
+				var imgDivs = document.getElementsByClassName('imgDiv')
+				for(i=0;i<imgDivs.length;i++){
+					if (trial.item.arrangement[i]=='1'){ //1=P
+						var s1 = [ pd[(i*4)], pd[(i*4)+1] ].join('/')
+						var s2 = [ pd[(i*4)+2], pd[(i*4)+3] ].join('/')
+						imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:"+
+							imgs[i].bgColor+";>\
+							<p style='margin:auto;color:"+imgs[i].textColor+";'>"+s1+"</p></div>"+
+							"<div id='singleVal' style="+styles.valDivR+"background-color:"+
+							imgs[i].bgColor+";>\
+							<p style='margin:auto;color:"+imgs[i].textColor+";'>"+s2+"</p></div>";
+					}else{
+						imgDivs[i].innerHTML = "<div id='singleVal' style="+styles.valDivL+"background-color:black;>\
+							<p style='margin:auto;color:white;'>##/##</p></div>"+
+							"<div id='singleVal' style="+styles.valDivR+"background-color:black;>\
+							<p style='margin:auto;color:white;'>##/##</p></div>";
+					}
 				}
 			};
+
+			displayStimuli()
 
 			// start the response listener
 			var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
@@ -258,7 +301,7 @@
 				valid_responses: [37,39],
 				rt_method: 'date',
 				persist: true,
-				allow_held_key: false,
+				allow_held_key: false
 			});
 		};
 

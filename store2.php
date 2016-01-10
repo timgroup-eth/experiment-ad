@@ -11,11 +11,12 @@ $openshift_data_dir = $_ENV["OPENSHIFT_DATA_DIR"];
 $timestr = date('Y-m-d_H:i:s');
 
 //at first, write a backup copy of the json file into backup folder
+if(!file_exists($openshift_data_dir.'json/')){ mkdir($openshift_data_dir.'json/',0777,true);}
 file_put_contents($openshift_data_dir.'json/'.$timestr.'_'.uniqid().'.txt', $jsonData);
 
 // then put csvStrings in experiment folder.
 if(!file_exists($openshift_data_dir.'csv/'.$folder.'/')){ mkdir($openshift_data_dir.'csv/'.$folder.'/',0777,true);}
 for ($i = 0; $i < sizeof($csvData); $i++) {
       file_put_contents($openshift_data_dir.'csv/'.$folder.'/'.$subjectID.'_'.$i.'.csv', $csvData[$i]);
-}
+};
 ?>

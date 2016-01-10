@@ -145,6 +145,7 @@
       user: User,
       env: Env,
       img : Img,
+      nTrials: 10,
       displayStr : function(str){
         $('#fsDiv').html(str);
       },
@@ -177,16 +178,31 @@
             };
           };
         };
-        return items
+        return items.slice(0,this.nTrials)
       },
-      jsAnnaBlock:function(){
+      jsAnnaChunk:function(){
 
         t = {
           type:'anna',
           items : this.annaItems,
           user : this.user,
-          env : this.env
+          env : this.env,
+          on_finish : function(data){
+            if (Experiment.annaItems.length == jsPsych.data.getTrialsOfType('anna').length){
+              Experiment.saveData();
+            };
+          }
         };
+
+        // c = {
+        //   chunk_type : 'linear',
+        //   timeline : [t],
+        //   on_finish : function(data){
+        //     if (this.annaItems.length == data.length){
+        //       this.saveData();
+        //     };
+        //   }
+        // };
 
         return t;
       },
@@ -199,11 +215,21 @@
         this.backgroundDiv()
         jsPsych.init({
           display_element: $('#fsDiv'),
-          experiment_structure: [this.jsAnnaBlock()]
+          experiment_structure: [this.jsAnnaChunk()]
         });
       },
+      saveData : function(){
+        var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna')]
+        $.ajax({
+          type: 'post',
+          cache: false,
+          url: './store2.php',
+          data: {subjectID: this.user.Id, folder: 'anna', csvStrings: csvStrings, dataAsJSON: jsPsych.data.dataAsJSON()}
+        });
+        console.log('Data saved.');
+      },
       abort : function(str){
-        this.displayStr(str)
+        this.displayStr(str);
         throw new Error('Experiment aborted.');
       },
       waitForImgs : function(){
