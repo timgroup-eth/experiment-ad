@@ -224,7 +224,7 @@
           type: 'post',
           cache: false,
           url: './store2.php',
-          data: {subjectID: this.user.Id, folder: 'anna', csvStrings: csvStrings, dataAsJSON: jsPsych.data.dataAsJSON()}
+          data: {subjectID: Experiment.user.UID, folder: 'anna', csvStrings: csvStrings, dataAsJSON: jsPsych.data.dataAsJSON()}
         });
         console.log('Data saved.');
       },

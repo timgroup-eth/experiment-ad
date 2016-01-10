@@ -136,8 +136,6 @@
 			var pr = trial.item.isfoil==0 ? conf.pr() : trial.item.p;
 			var pd = trial.item.isfoil==0 ? conf.pd() : conf.meFirstSort();
 
-			console.log(pd);
-
 			var imgSize = 'height:420px;width:300px;background-size: 300px 420px;';
 			var imgStyle = 'position:absolute;margin:8px;';
 			var valStyle = 'position:absolute;height:32px;width:100px;text-align:center;font-size:25px;font-weight:bold;'
@@ -170,12 +168,18 @@
 				// gather the data to store for the trial
 				var trial_data = {
 					responseroot : response[0].key_string,
-					response2nd : response.length==2 ? response[1].key_string : -1,
 					timingroot : response[0].rt/1000.0,
-					timing2nd :  response.length==2 ? (response[1].rt - response[0].rt) / 1000.0 : -1,
-					payoffS : pr[keyMap[keyMapKey]['s']],
-					payoffC : pr[keyMap[keyMapKey]['c']],
-					pNew : pr.join()
+					pnr : pr.join(),
+					pnd : pd.join()
+				};
+
+				if (response.length==trialLength){
+					trial_data.payoffS = pr[keyMap[keyMapKey]['s']];
+					trial_data.payoffC = pr[keyMap[keyMapKey]['c']];
+					if(trialLength==2){
+						trial_data.response2nd = response[1].key_string
+						trial_data.timing2nd = (response[1].rt - response[0].rt) / 1000.0
+					};
 				};
 
 				JSON.flatten = function(data) {
