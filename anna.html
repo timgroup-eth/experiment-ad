@@ -112,7 +112,7 @@
       },
       loadingSmiley : function(){
         Experiment.backgroundDiv()
-        var smileyDivs = '<div id="loadingSmiley" style="margin-top:270px;"><center><p>Loading</p>\
+        var smileyDivs = '<div id="loadingSmiley" style="margin-top:'+((screen.height*0.5)-100).toString()+'px;"><center><p>Loading</p>\
           <div class="leftEye"></div><div class="rightEye"></div><div class="mouth"></div></center></div>';
         Experiment.displayStr(smileyDivs)
       },
