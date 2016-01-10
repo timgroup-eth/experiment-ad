@@ -102,7 +102,7 @@
 					}else{
 						var mfSort = [1,2,3,4,5,6,7,8].map(function(j){return j-1});
 					}
-					return mfSort;
+					return this.p.map(function(val,i){return conf.p[mfSort[i]]});
 				}
 			};
 
@@ -134,7 +134,9 @@
 			}
 
 			var pr = trial.item.isfoil==0 ? conf.pr() : trial.item.p;
-			var pd = trial.item.isfoil==0 ? conf.pd() : trial.item.p.map(function(i,val){return trial.item.p[conf.meFirstSort[i]]})
+			var pd = trial.item.isfoil==0 ? conf.pd() : conf.meFirstSort();
+
+			console.log(pd);
 
 			var imgSize = 'height:420px;width:300px;background-size: 300px 420px;';
 			var imgStyle = 'position:absolute;margin:8px;';
