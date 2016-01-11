@@ -22,59 +22,34 @@
     <script>
 
     var User = {
-      urlHasId : function(){
-        if (Object.keys(jsPsych.data.fromURL()).indexOf('id') > -1){
-          return true;
-        }else{
-          return false;
-        };
-      },
-      urlId : function(){
-        return jsPsych.data.fromURL('id')['id'];
-      },
-      checkId : function(){
-        var userInfoIds = userInfo.map(function(i){return i['UID']});
-        if (userInfoIds.indexOf(this.Id) > -1){
-          return true;
-        }else{
-          return false;
-        };
-      },
-      setId : function(){
-        if (this.urlHasId()){
-          this.Id = this.urlId();
-        }else{
-          this.Id = prompt('Bitte geben sie Ihren persoenlichen Code ein:')
+      urlHasInfo : function(){
+        var mandKeys = ['UID','colorcode','arrowcode','mefirst','charity','responseID'];
+        var urlData = jsPsych.data.fromURL();
+        for (var i =0;i<mandKeys.length;i++){
+          if (Object.keys(urlData).indexOf(mandKeys[i])<= -1){
+            return false
+          };
+          return true
         };
       },
       getUserInfo : function(){
-        var tempId = this.Id
-        var t = userInfo.filter(function(i){
-          return i['UID'] == tempId})[0];
-        t.colorcode = t.colorcode.split('').map(function(i){return parseInt(i)})
-        t.arrowcode = t.arrowcode.split('').map(function(i){return parseInt(i)})
-        return t
-      },
-      init : function(){
-        this.setId()
-        var idx = 1;
-        while(!this.checkId()&&idx<3){
-          var tempId = prompt('Der angegebene persoenliche Code ist nicht korrekt. Probieren Sie es noch einmal:');
-          this.Id = tempId;
-          idx= idx+1;
+        var urlData = jsPsych.data.fromURL();
+        var userData = {
+          UID : urlData.UID,
+          arrowcode : urlData.arrowcode.split('').map(function(i){return parseInt(i)}),
+          colorcode : urlData.colorcode.split('').map(function(i){return parseInt(i)}),
+          mefirst : parseInt(urlData['mefirst']),
+          charity :  urlData.charity
         };
-        if (idx>=3){
-          this.setUserStatus('error')
-          Experiment.displayStr('Sie haben 3 mal eine inkorrekte User Id angegeben. Bitte kontaktieren Sie Anna Dereky.');
-          Experiment.abort()
+        return userData
+      },
+      init: function(){
+        if (this.urlHasInfo()){
+          return this.getUserInfo()
         }else{
-          userObject = this.getUserInfo();
-          userObject.Status = 'ready';
-          return userObject
+          $('body').html('Diese Url ist ungueltig. Bitte kontaktieren Sie Anna Dereky.');
+          Experiment.abort()
         };
-      },
-      setUserStatus: function(stat){
-        this.Status = stat;
       }
     };
 
@@ -181,7 +156,6 @@
         return items.slice(0,this.nTrials)
       },
       jsAnnaChunk:function(){
-
         t = {
           type:'anna',
           items : this.annaItems,
@@ -193,17 +167,6 @@
             };
           }
         };
-
-        // c = {
-        //   chunk_type : 'linear',
-        //   timeline : [t],
-        //   on_finish : function(data){
-        //     if (this.annaItems.length == data.length){
-        //       this.saveData();
-        //     };
-        //   }
-        // };
-
         return t;
       },
       backgroundDiv : function(){
