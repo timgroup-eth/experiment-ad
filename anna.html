@@ -9,6 +9,7 @@
         <script src="./jsPsych-4.3/plugins/jspsych-html-input-ao.js"></script>
         <script src="./jsPsych-4.3/plugins/jspsych-fullscreen.js"></script>
         <script src="./jsPsych-4.3/plugins/jspsych-anna.js"></script>
+        <script src="./jsPsych-4.3/plugins/jspsych-text.js"></script>
         <script src="./timeline.js"></script>
         <script src="./guiInfo.js"></script>
         <script src="./userInfo.js"></script>
@@ -120,7 +121,7 @@
       user: User,
       env: Env,
       img : Img,
-      nTrials: 10,
+      nTrials: parseInt(jsPsych.data.fromURL()['nTrials']) || timeline.length,
       displayStr : function(str){
         $('#fsDiv').html(str);
       },
@@ -155,7 +156,7 @@
         };
         return items.slice(0,this.nTrials)
       },
-      jsAnnaChunk:function(){
+      jsAnnaBlock:function(){
         t = {
           type:'anna',
           items : this.annaItems,
@@ -169,16 +170,32 @@
         };
         return t;
       },
+      endBlock : function(){
+        var parStr = this.wrap('<p>This is the end. Thank You.</p>');
+        var b = {
+          type : 'text',
+          text : parStr
+        };
+        return b
+      },
       backgroundDiv : function(){
-        var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;\
-                    height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
+        var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;"+
+                    "height:"+this.env.screenH.toString()+"px;width:"+this.env.screenW.toString()+"px;'></div>";
         $('body').html(fsDiv);
+      },
+      wrap : function(p){
+        var divStr = '<div style="width:800px;text-align:center;margin-left:'+((screen.width-800)/2).toString()+
+                      'px;">'+p+'</div>'
+        return divStr
       },
       startJsPsych : function(){
         this.backgroundDiv()
+        var timeline  =  [];
+        // timeline.push(this.jsAnnaBlock());
+        timeline.push(this.endBlock());
         jsPsych.init({
           display_element: $('#fsDiv'),
-          experiment_structure: [this.jsAnnaChunk()]
+          experiment_structure: timeline
         });
       },
       saveData : function(){
