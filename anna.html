@@ -24,7 +24,7 @@
 
     var User = {
       urlHasInfo : function(){
-        var mandKeys = ['UID','colorcode','arrowcode','mefirst','charity','responseID'];
+        var mandKeys = ['i','c','a','m','ch','r'];
         var urlData = jsPsych.data.fromURL();
         for (var i =0;i<mandKeys.length;i++){
           if (Object.keys(urlData).indexOf(mandKeys[i])<= -1){
@@ -35,12 +35,23 @@
       },
       getUserInfo : function(){
         var urlData = jsPsych.data.fromURL();
+        var charityMap = {
+          1 : 'WWF',
+          2 : 'Greenpeace',
+          3 : 'Declaration of Bern',
+          4 : 'Amnesty International',
+          7 : 'Caritas',
+          8 : 'Terres des Hommes',
+          9 : 'Unicef',
+          10 : 'Médecins sans Frontières'
+        };
         var userData = {
-          UID : urlData.UID,
-          arrowcode : urlData.arrowcode.split('').map(function(i){return parseInt(i)}),
-          colorcode : urlData.colorcode.split('').map(function(i){return parseInt(i)}),
-          mefirst : parseInt(urlData['mefirst']),
-          charity :  urlData.charity
+          UID : urlData.i,
+          arrowcode : urlData.a.split('').map(function(i){return parseInt(i)}),
+          colorcode : urlData.c.split('').map(function(i){return parseInt(i)}),
+          mefirst : parseInt(urlData.m),
+          charity : isNaN(urlData.ch) ? urlData.ch : charityMap[parseInt(urlData.ch)] ,
+          responseID : urlData.r
         };
         return userData
       },
