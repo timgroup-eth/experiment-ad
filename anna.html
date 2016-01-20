@@ -49,7 +49,9 @@
           mefirst : parseInt(urlData.m),
           charity : isNaN(urlData.ch) ? urlData.ch : charityMap[parseInt(urlData.ch)] ,
           responseID : urlData.r,
-          sessionID : parseInt(urlData.s)
+          sessionID : parseInt(urlData.s),
+          sesssionCode : jsPsych.randomization.randomID(12),
+          sessionStart : new Date()
         };
         return userData
       },
@@ -122,8 +124,10 @@
         contentDivStyle : 'position:absolute;width:800px;left:'+
                           +((screen.width-800)/2).toString()+'px;',
         buttonStyle : 'height:60px;width:90px;float:right;font-size:12px;font-weight:bold;',
-        wrap : function(p){
-          var divStart = "<div id='content' style='"+this.contentDivStyle+"'>"
+        wrap : function(p,top){
+          var divStyle = this.contentDivStyle;
+          if (typeof top != 'undefined'){divStyle=divStyle+'top:'+top+'px;'};
+          var divStart = "<div id='content' style='"+divStyle+"'>"
           if (typeof p == 'string'){
             var t = divStart+p+'</div>';
           }else{
@@ -174,16 +178,20 @@
             buttontext: "Save & Exit",
             html : html,
             on_finish : function(data){
+              Experiment.user.sessionEnd = new Date();
               Experiment.saveData();
             }
           };
           return b;
         },
         confirmation_block : function(){
-          pages = Experiment.wrap(instructions.confirmation)
+          page = this.wrap(instructions.confirmation,100)
           b = {
             type : 'instructions',
-            pages : pages
+            pages : [page],
+            on_trial_start : function(){
+              setTimeout(function(){$('#conf_code').html(Experiment.user.sesssionCode)},200);
+            }
           };
           return b;
         },
@@ -302,7 +310,7 @@
               return n
             });
 
-            return items
+            return items.slice(0,Experiment.nTrials)
           };
 
           b = {
@@ -313,7 +321,7 @@
         },
         init : function(){
           var timeline  =  [];
-          // timeline.push(this.enter_fullscreen_block());
+          timeline.push(this.enter_fullscreen_block());
           timeline.push(this.anna_block());
           timeline.push(this.exit_fullscreen_block());
           timeline.push(this.confirmation_block());
@@ -339,12 +347,23 @@
         });
       },
       saveData : function(){
-        var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna')]
+        function getUserDataAsCSV(){
+          keys = Object.keys(Experiment.user)
+          header = '';
+          dataStr = ''
+          for (i=0;i<keys.length;i++){
+            header= i>0 ? header+','+keys[i] : keys[i];
+            dataStr= i>0 ? header+','+Experiment.user[keys[i]] : Experiment.user[keys[i]];
+          }
+          dataStr = header+'\n'+dataStr+'\n';
+          return dataStr
+        }
+        var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna'),getUserDataAsCSV()]
         $.ajax({
           type: 'post',
           cache: false,
           url: './store2.php',
-          data: {subjectID: Experiment.user.UID, folder: 'anna', csvStrings: csvStrings, dataAsJSON: jsPsych.data.dataAsJSON()}
+          data: {subjectID: Experiment.user.UID, folder: 'anna', csvStrings: csvStrings, dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.user)]}
         });
         console.log('Data saved.');
       },

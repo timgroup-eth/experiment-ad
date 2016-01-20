@@ -4,7 +4,6 @@ jsPsych.plugins["anna"] = (function() {
 		var plugin = {};
 
 		plugin.trial = function(display_element, trial) {
-			console.log(trial)
 			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
 
@@ -105,9 +104,8 @@ jsPsych.plugins["anna"] = (function() {
 				for (var key in flatItem){
 					trial_data[key] = flatItem[key];
 				};
-
-				jsPsych.data.write(trial_data);
 				console.log(trial_data)
+				jsPsych.data.write(trial_data);
 				if (response.length==trial.combination.length){
 					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
 														"<p>Feedback</p>"+
@@ -121,7 +119,10 @@ jsPsych.plugins["anna"] = (function() {
 				}
 
 				// move on to the next trial
-				setTimeout(jsPsych.finishTrial,interTrialInterval);
+				setTimeout(function(){
+					display_element.html('');
+					jsPsych.finishTrial();}
+					,interTrialInterval);
 			};
 
 
