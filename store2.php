@@ -13,7 +13,7 @@ $timestr = date('Y-m-d_H:i:s');
 //at first, write a backup copy of the json file into backup folder
 if(!file_exists($openshift_data_dir.'json/')){ mkdir($openshift_data_dir.'json/',0777,true);}
 for ($i = 0; $i < sizeof($jsonData); $i++) {
-      file_put_contents($openshift_data_dir.'json/'.$timestr.'_'.uniqid().'_'.$i.'.txt', $jsonData);
+      file_put_contents($openshift_data_dir.'json/'.$timestr.'_'.uniqid().'_'.$i.'.txt', $jsonData[$i]);
 };
 
 
