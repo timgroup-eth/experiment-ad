@@ -3,16 +3,17 @@
     <head>
         <title>Timgroup: Experiment 1</title>
         <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-        <script src="./jsPsych-4.3/jquery.min.js"></script>
-        <script src="./jsPsych-4.3/jspsych.js"></script>
-        <script src="./jsPsych-4.3/plugins/jspsych-instructions.js"></script>
-        <script src="./jsPsych-4.3/plugins/jspsych-fullscreen.js"></script>
-        <script src="./jsPsych-4.3/plugins/jspsych-anna-training.js"></script>
+        <script src="./jquery.min.js"></script>
+        <script src="./jspsych.js"></script>
+        <script src="./plugins/jspsych-instructions.js"></script>
+        <script src="./plugins/jspsych-fullscreen.js"></script>
+        <script src="./plugins/jspsych-anna.js"></script>
         <script src="./guiInfo.js"></script>
         <script src="./userInfo.js"></script>
         <script src="./imgData.js"></script>
+        <script src="./timeline.js"></script>
         <!-- <script> var ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";</script> -->
-        <link href="./jsPsych-4.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+        <link href="./css/jspsych.css" rel="stylesheet" type="text/css"></link>
         <link href="./loadingSmiley.css" rel="stylesheet" type="text/css"></link>
     </head>
     <script>
@@ -20,7 +21,7 @@
     var User = {
       urlHasInfo : function(){
         var mandKeys = ['i','c','a','m','ch','r','s'];
-        var urlData = jsPsych.data.fromURL();
+        var urlData = jsPsych.data.urlVariables();
         for (var i =0;i<mandKeys.length;i++){
           if (Object.keys(urlData).indexOf(mandKeys[i])<= -1){
             return false
@@ -29,7 +30,7 @@
         };
       },
       getUserInfo : function(){
-        var urlData = jsPsych.data.fromURL();
+        var urlData = jsPsych.data.urlVariables();
         var charityMap = {
           1 : 'WWF',
           2 : 'Greenpeace',
@@ -94,7 +95,7 @@
         this.loadingSmiley()
         var allImgPaths = this.imgPaths();
         this.t0=Date.now();
-        jsPsych.preloadImages(allImgPaths,
+        jsPsych.pluginAPI.preloadImages(allImgPaths,
           function(){Experiment.img.imagesLoaded();
           // },function(i){$('body').html(parseInt(i/allImgPaths.length*100).toString()+' Images loaded');
         });
@@ -112,7 +113,7 @@
     var Experiment = {
       user: User,
       img : Img,
-      nTrials: parseInt(jsPsych.data.fromURL()['nTrials']) || 280,
+      nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || 280,
       displayStr : function(str){
         $('#fsDiv').html(str);
       },
@@ -151,6 +152,64 @@
             colorindex = colorindex.concat(jsPsych.randomization.shuffle(tempindex))
             return colorindex;
           };
+
+          var getSetupItems = function(){
+            var colorcode = Experiment.user.colorcode;
+            var arrowcode = Experiment.user.arrowcode;
+            var mefirst = Experiment.user.mefirst;
+            var fractals = Experiment.img.fractals.items;
+            var arrowswitch = [2,3,0,1];
+            var mefirstswitch = [1,0,3,2];
+            // var values =  [[70,60,60,80],[70,30,40,80],[60,50,40,80],[80,30,60,60],[50,50,40,70],[70,30,50,50],[50,50,50,80]];
+            var regularImgShuffled = this.img.regular.shuffled();
+            var fractals = this.img.fractals.items;
+            var items = jsPsych.randomization.shuffle(timeline);
+            //make structure uniform
+            items = items.map(function(i){
+              if (typeof i.arrangement != 'object'){
+                i.arrangement = [i.arrangement]
+              };
+              if (typeof i.combination != 'object'){
+                i.combination = [i.combination]
+              };
+              return i
+            });
+
+            var regIdx = 0;
+            items = items.map(function(i){
+              //distribute images
+              i.imgs = [];
+              i.m = mefirst;
+              i.c = [-1,-1];
+              i.v = [-1,-1];
+              i.a = [-1,-1];
+              i.p = i.arrangement.length == 2 ? [i.p.slice(0,4),i.p.slice(4,8)] : [i.p.slice(0,4)];
+              i.d = i.p;
+              for(j=0;j<i.arrangement.length;j++){
+                if(i.arrangement[j]==1){
+                  i.imgs[j] = regularImgShuffled[regIdx];
+                  regIdx++
+                }else{
+                  var valueversion = i.combination[j] - 1;
+                  var colorversion = colorcode.indexOf(valueversion)
+                  var arrowversion = arrowcode[colorversion]
+                  i.v[j] = valueversion;
+                  i.c[j] = colorversion;
+                  i.a[j] = arrowversion;
+                  i.imgs[j] = fractals[colorversion];
+                  if (arrowversion == 1){
+                    var vals = i.p[j]
+                    i.p[j] = vals.map(function(val,j){return vals[arrowswitch[j]]})
+                  };
+                };
+                if (mefirst==0){
+                  var vals = i.d[j]
+                  i.d[j] = vals.map(function(val,j){return vals[mefirstswitch[j]]})
+                }
+              };
+              return i
+            });
+
           var getAnnaItems = function(){
             var colorindex = getColorindex();
             var colorcode = Experiment.user.colorcode;
@@ -173,15 +232,15 @@
               dispVals = mefirst == 1 ? vals : vals.map(function(val,j){return vals[mefirstswitch[j]]})
 
               var n = {
-                c : i,
-                v : valueversion,
-                a : arrowversion,
+                c : [i],
+                v : [valueversion],
+                a : [arrowversion],
                 condition : 'T',
                 arrangement : [2],
-                combination : [i],
-                img : [fractals[i]],
-                p : vals,
-                d : dispVals,
+                combination : [valueversion+1],
+                imgs : [fractals[i]],
+                p : [vals],
+                d : [dispVals],
                 m : mefirst,
                 isfoil  : 0
               }
@@ -191,8 +250,8 @@
             return items
           };
           b = {
-            type: 'anna-training',
-            items : getAnnaItems(),
+            type: 'anna',
+            timeline : getAnnaItems(),
           };
           return b;
         },
@@ -206,7 +265,7 @@
       },
       backgroundDiv : function(){
         var fsDiv = "<div id='fsDiv' style='background-color:rgb(140,140,140);text-algin:center;position:absolute;"+
-                    "height:"+screen.height.toString()+"px;width:"+screen.width.toString()+"px;'></div>";
+                    "height:"+screen.height.toString()+"px;width:"+screen.width.toString()+"px;margin:0px;'></div>";
         $('body').html(fsDiv);
       },
       wrap : function(p){
@@ -217,10 +276,9 @@
       startJsPsych : function(){
         this.backgroundDiv();
         var timeline = this.timeline.init();
-
         jsPsych.init({
           display_element: $('#fsDiv'),
-          experiment_structure: timeline
+          timeline: timeline
         });
       },
       saveData : function(){
@@ -239,7 +297,7 @@
       },
       waitForImgsAndStartExperiment : function(){
         if(Experiment.img.loadedStatus == 'not loaded'){
-          setTimeout(Experiment.waitForImgs,1000);
+          setTimeout(Experiment.waitForImgsAndStartExperiment,1000);
         }else{
           Experiment.startJsPsych()
         };
