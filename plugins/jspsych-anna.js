@@ -33,7 +33,7 @@ jsPsych.plugins["anna"] = (function() {
 						imgDiv : imgSize+imgStyle+'left:'+(env.centX+250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;'
 					}
 				},
-				feedbackDiv : 'position:absolute;font-size:20px;font-weight:bold;top:300px;left:'+(env.centX-100).toString()+'px;'
+				feedbackDiv : 'position:absolute;font-size:20px;font-weight:bold;top:'+(env.centY-60).toString()+'px;left:'+(env.centX-60).toString()+'px;'
 			};
 
 			timeOutHandlers = []
@@ -108,9 +108,8 @@ jsPsych.plugins["anna"] = (function() {
 				jsPsych.data.write(trial_data);
 				if (response.length==trial.combination.length){
 					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
-														"<p>Feedback</p>"+
-														"<p>Self: "+trial_data.payoffS.toString()+"</p>"+
-														"<p>Charity: "+trial_data.payoffC.toString()+"</p>"+
+														"<p>Business: "+trial_data.payoffS.toString()+"</p>"+
+														"<p>Society: "+trial_data.payoffC.toString()+"</p>"+
 														"</div>"
 					// clear the display
 					display_element.html(feedBackStr);
