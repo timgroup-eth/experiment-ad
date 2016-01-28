@@ -50,7 +50,7 @@
           charity : isNaN(urlData.ch) ? urlData.ch : charityMap[parseInt(urlData.ch)] ,
           responseID : urlData.r,
           sessionID : parseInt(urlData.s),
-          sesssionCode : jsPsych.randomization.randomID(12),
+          sessionCode : jsPsych.randomization.randomID(12),
           sessionStart : new Date()
         };
         return userData
@@ -190,7 +190,7 @@
             type : 'instructions',
             pages : [page],
             on_trial_start : function(){
-              setTimeout(function(){$('#conf_code').html(Experiment.user.sesssionCode)},200);
+              setTimeout(function(){$('#conf_code').html(Experiment.user.sessionCode)},200);
             }
           };
           return b;
@@ -363,7 +363,7 @@
           type: 'post',
           cache: false,
           url: './store2.php',
-          data: {subjectID: Experiment.user.UID, folder: 'anna', csvStrings: csvStrings, dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.user)]}
+          data: {subjectID: Experiment.user.UID+'_'+Experiment.user.sessionID+'_'+Experiment.user.sessionCode, folder: 'anna', csvStrings: csvStrings, dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.user)]}
         });
         console.log('Data saved.');
       },
