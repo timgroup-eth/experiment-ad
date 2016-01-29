@@ -363,7 +363,7 @@
           type: 'post',
           cache: false,
           url: './store2.php',
-          data: {subjectID: [Experiment.user.UID,Experiment.user.sessionID,Experiment.user.sessionCode].join('_'), folder: 'anna', csvStrings: csvStrings, dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.user)]}
+          data: {subjectID: [Experiment.user.UID,Experiment.user.sessionID,Experiment.user.sessionCode].join('-'), folder: 'anna', csvStrings: csvStrings, dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.user)]}
         });
         console.log('Data saved.');
       },
