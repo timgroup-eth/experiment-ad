@@ -33,7 +33,8 @@ jsPsych.plugins["anna"] = (function() {
 						imgDiv : imgSize+imgStyle+'left:'+(env.centX+250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;'
 					}
 				},
-				feedbackDiv : 'position:absolute;font-size:20px;font-weight:bold;top:'+(env.centY-60).toString()+'px;left:'+(env.centX-60).toString()+'px;'
+				feedbackDiv : 'position:absolute;font-size:20px;font-weight:bold;top:'+(env.centY-60).toString()+'px;left:'+(env.centX-60).toString()+'px;',
+				noResponseDiv : 'position:absolute;font-size:20px;font-weight:bold;top:'+(env.centY-30).toString()+'px;left:'+(env.centX-110).toString()+'px;'
 			};
 
 			timeOutHandlers = []
@@ -114,7 +115,7 @@ jsPsych.plugins["anna"] = (function() {
 					// clear the display
 					display_element.html(feedBackStr);
 				}else{
-					display_element.html('');
+					display_element.html("<div id='feedback' style='"+styles.noResponseDiv+"'><p>No response recorded.</p></div>");
 				}
 
 				// move on to the next trial

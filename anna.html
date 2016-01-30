@@ -58,7 +58,7 @@
       init: function(){
         if (this.urlHasInfo()){
           inf = this.getUserInfo();
-          jsPsych.data.addProperties({UID:inf.UID});
+          jsPsych.data.addProperties({UID:inf.UID,sessionID:inf.sessionID});
           return inf;
         }else{
           var str = '<p>This URL is invalid. Please try to reopen the link from qualtrics again.<br>If the problem still occurs please contact Anna Dereky at adereky(at)ethz.ch.</p>';
