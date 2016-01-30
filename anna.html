@@ -51,7 +51,7 @@
           responseID : urlData.r,
           sessionID : parseInt(urlData.s),
           sessionCode : jsPsych.randomization.randomID(12),
-          sessionStart : new Date()
+          sessionStart : new Date().toString()
         };
         return userData
       },
@@ -181,7 +181,7 @@
             buttontext: "Save & Exit",
             html : html,
             on_finish : function(data){
-              Experiment.user.sessionEnd = new Date();
+              Experiment.user.sessionEnd = new Date().toString();
               Experiment.saveData();
             }
           };
@@ -396,14 +396,19 @@
         // };
         //
         function getUserDataAsCSV(){
-          keys = Object.keys(Experiment.user)
-          header = '';
-          dataStr = ''
+          var keys = Object.keys(Experiment.user)
+          var header = '';
+          var dataStr = ''
+          var info = Experiment.user
+
           for (i=0;i<keys.length;i++){
+            console.log(typeof info[keys[i]])
+            var t = typeof info[keys[i]] == 'object' ? info[keys[i]].join('') : info[keys[i]];
             header= i>0 ? header+','+keys[i] : keys[i];
-            dataStr= i>0 ? dataStr+','+Experiment.user[keys[i]] : Experiment.user[keys[i]];
+            dataStr= i>0 ? dataStr+','+t : t;
           }
           dataStr = header+'\n'+dataStr+'\n';
+          console.log(dataStr)
           return dataStr
         }
         var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna'),getUserDataAsCSV()]
