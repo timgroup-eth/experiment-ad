@@ -57,10 +57,12 @@
       },
       init: function(){
         if (this.urlHasInfo()){
-          return this.getUserInfo()
+          inf = this.getUserInfo();
+          jsPsych.data.addProperties({UID:inf.UID});
+          return inf;
         }else{
-          $('body').html('Diese Url ist ungueltig. Bitte kontaktieren Sie Anna Dereky.');
-          Experiment.abort()
+          $('body').html('This URL is invalid. Please try to reopen the link from qualtrics again. If the problem still occurs please contact Anna Dereky at adereky(at)ethz.ch.');
+          Experiment.abort();
         };
       }
     };
@@ -347,13 +349,58 @@
         });
       },
       saveData : function(){
+        // var json2csv = function(objArray){
+        //     var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+        //     var str = '';
+        //     var line = '';
+        //     var quote = true;
+        //     var header = true
+        //
+        //     if (header==true) {
+        //         var head = array[0];
+        //         if ($("#quote").is(':checked')) {
+        //             for (var index in array[0]) {
+        //                 var value = index + "";
+        //                 line += '"' + value.replace(/"/g, '""') + '",';
+        //             }
+        //         } else {
+        //             for (var index in array[0]) {
+        //                 line += index + ',';
+        //             }
+        //         }
+        //
+        //         line = line.slice(0, -1);
+        //         str += line + '\r\n';
+        //     }
+        //
+        //     for (var i = 0; i < array.length; i++) {
+        //         var line = '';
+        //
+        //         if (quote==true) {
+        //             for (var index in array[i]) {
+        //                 var value = array[i][index] + "";
+        //                 line += '"' + value.replace(/"/g, '""') + '",';
+        //             }
+        //         } else {
+        //             for (var index in array[i]) {
+        //                 line += array[i][index] + ',';
+        //             }
+        //         }
+        //
+        //         line = line.slice(0, -1);
+        //         str += line + '\r\n';
+        //     }
+        //     return str;
+        //
+        // };
+        //
         function getUserDataAsCSV(){
           keys = Object.keys(Experiment.user)
           header = '';
           dataStr = ''
           for (i=0;i<keys.length;i++){
             header= i>0 ? header+','+keys[i] : keys[i];
-            dataStr= i>0 ? header+','+Experiment.user[keys[i]] : Experiment.user[keys[i]];
+            dataStr= i>0 ? dataStr+','+Experiment.user[keys[i]] : Experiment.user[keys[i]];
           }
           dataStr = header+'\n'+dataStr+'\n';
           return dataStr

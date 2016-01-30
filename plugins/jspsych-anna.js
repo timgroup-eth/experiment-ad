@@ -105,7 +105,7 @@ jsPsych.plugins["anna"] = (function() {
 					trial_data[key] = flatItem[key];
 				};
 				console.log(trial_data)
-				jsPsych.data.write(trial_data);
+
 				if (response.length==trial.combination.length){
 					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
 														"<p>Business: "+trial_data.payoffS.toString()+"</p>"+
@@ -120,7 +120,7 @@ jsPsych.plugins["anna"] = (function() {
 				// move on to the next trial
 				setTimeout(function(){
 					display_element.html('');
-					jsPsych.finishTrial();}
+					jsPsych.finishTrial(trial_data);}
 					,interTrialInterval);
 			};
 
