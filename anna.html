@@ -225,7 +225,7 @@
             var fractals = Experiment.img.fractals.items;
             var arrowswitch = [2,3,0,1];
             var mefirstswitch = [1,0,3,2];
-            // var values =  [[70,60,60,80],[70,30,40,80],[60,50,40,80],[80,30,60,60],[50,50,40,70],[70,30,50,50],[50,50,50,80]];
+
             var regularImgShuffled = Experiment.img.regular.shuffled();
             var items = jsPsych.randomization.shuffle(timeline);
             //make structure uniform
@@ -284,7 +284,8 @@
             var fractals = Experiment.img.fractals.items;
             var arrowswitch = [2,3,0,1];
             var mefirstswitch = [1,0,3,2];
-            var values =  [[70,60,60,80],[70,30,40,80],[60,50,40,80],[80,30,60,60],[50,50,40,70],[70,30,50,50],[50,50,50,80]];
+            var values =  [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]]
+            // old values [[70,60,60,80],[70,30,40,80],[60,50,40,80],[80,30,60,60],[50,50,40,70],[70,30,50,50],[50,50,50,80]];
 
             var items = colorindex.map(function(i){
               var valueversion = colorcode[i]
