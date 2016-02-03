@@ -199,6 +199,7 @@
           return b;
         },
         anna_block : function(){
+          var values =  [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]]
 
           var getColorindex = function(){
             var colorindex = [];
@@ -262,10 +263,12 @@
                   i.a[j] = arrowversion;
                   i.imgs[j] = fractals[colorversion];
                   if (arrowversion == 1){
-                    var vals = i.p[j]
+                    var vals = values[valueversion];
                     i.p[j] = vals.map(function(val,j){return vals[arrowswitch[j]]})
                   };
                 };
+
+                //for all conditions
                 if (mefirst==0){
                   var vals = i.d[j]
                   i.d[j] = vals.map(function(val,j){return vals[mefirstswitch[j]]})
@@ -273,6 +276,7 @@
               };
               return i
             });
+            console.log(items)
             return items;
           };
 
@@ -284,7 +288,6 @@
             var fractals = Experiment.img.fractals.items;
             var arrowswitch = [2,3,0,1];
             var mefirstswitch = [1,0,3,2];
-            var values =  [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]]
             // old values [[70,60,60,80],[70,30,40,80],[60,50,40,80],[80,30,60,60],[50,50,40,70],[70,30,50,50],[50,50,50,80]];
 
             var items = colorindex.map(function(i){
