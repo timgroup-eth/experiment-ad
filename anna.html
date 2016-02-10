@@ -2,7 +2,6 @@
 <html>
     <head>
         <title>Timgroup: Experiment 1</title>
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
         <script src="./jquery.min.js"></script>
         <script src="./jspsych.js"></script>
         <script src="./plugins/jspsych-instructions.js"></script>
@@ -51,7 +50,7 @@
           responseID : urlData.r,
           sessionID : parseInt(urlData.s),
           sessionCode : jsPsych.randomization.randomID(12),
-          sessionStart : new Date().toString().replace(',','');
+          sessionStart : new Date().toString().replace(',','')
         };
         return userData
       },
