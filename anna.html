@@ -51,7 +51,7 @@
           responseID : urlData.r,
           sessionID : parseInt(urlData.s),
           sessionCode : jsPsych.randomization.randomID(12),
-          sessionStart : new Date().toString()
+          sessionStart : new Date().toString().replace(',','');
         };
         return userData
       },
@@ -181,7 +181,7 @@
             buttontext: "Save & Exit",
             html : html,
             on_finish : function(data){
-              Experiment.user.sessionEnd = new Date().toString();
+              Experiment.user.sessionEnd = new Date().toString().replace(',','');
               Experiment.saveData();
             }
           };
