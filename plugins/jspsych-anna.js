@@ -113,10 +113,10 @@ jsPsych.plugins["anna"] = (function() {
 
 				// move on to the next trial
 				function moveOn(){
+					var cur = parseInt(jsPsych.currentTimelineNodeID().slice(8,9));
+					percStr = Math.round((cur+1)/Experiment.nTrials*100).toString()+'%';
+					$('#jspsych-progressbar-inner').css('width',percStr);
 					setTimeout(function(){
-						var cur = parseInt(jsPsych.currentTimelineNodeID().slice(8,9));
-						percStr = Math.round((cur+1)/Experiment.nTrials*100).toString()+'%';
-						$('#jspsych-progressbar-inner').css('width',percStr);
 						display_element.html('');
 						jsPsych.finishTrial(trial_data);}
 					,interTrialInterval);
