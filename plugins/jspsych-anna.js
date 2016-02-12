@@ -113,7 +113,7 @@ jsPsych.plugins["anna"] = (function() {
 
 				// move on to the next trial
 				function moveOn(){
-					var cur = parseInt(jsPsych.currentTimelineNodeID().slice(8,9));
+					var cur = parseInt(jsPsych.currentTimelineNodeID().split('-')[2]);
 					percStr = Math.round((cur+1)/Experiment.nTrials*100).toString()+'%';
 					$('#jspsych-progressbar-inner').css('width',percStr);
 					setTimeout(function(){
