@@ -165,7 +165,7 @@
             visibility: true,
             on_fullscreen_abort: function(){
               jsPsych.finishTrial();
-              jsPsych.endExperiment('The experiment was terminated due to fullscreen abort.');
+              jsPsych.endExperiment('The experiment was terminated due to fullscreen abort. Please reopen the link from qualtrics.');
             },
             on_fullscreen_fail: function(){
               jsPsych.finishTrial();
@@ -174,7 +174,7 @@
             },
             on_visibility_abort:function(){
               jsPsych.finishTrial();
-              jsPsych.endExperiment('The experiment was terminated due to lack of visibility of the window.');
+              jsPsych.endExperiment('The experiment was terminated due to lack of visibility of the window. Please reopen the link from qualtrics.');
             },
             on_visibility_fail:function(){
               jsPsych.finishTrial();
