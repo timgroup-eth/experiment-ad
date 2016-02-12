@@ -4,7 +4,6 @@ jsPsych.plugins["anna"] = (function() {
 		var plugin = {};
 
 		plugin.trial = function(display_element, trial) {
-
 			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
 
@@ -105,27 +104,14 @@ jsPsych.plugins["anna"] = (function() {
 			    recurse(data, "");
 			    return result;
 				}
+
 				var flatItem = JSON.flatten(trial);
 				for (var key in flatItem){
 					trial_data[key] = flatItem[key];
 				};
 				console.log(trial_data)
 
-				// move on to the next trial
-				function moveOn(){
-					setTimeout(function(){
-						var cur = parseInt(jsPsych.currentTimelineNodeID().slice(8,9));
-						percStr = Math.round((cur+1)/Experiment.nTrials*100).toString()+'%';
-						$('#jspsych-progressbar-inner').css('width',percStr);
-						display_element.html('');
-						jsPsych.finishTrial(trial_data);}
-					,interTrialInterval);
-				};
-
-				if(trial.condition="D"){
-					display_element.html('');
-					moveOn();
-				}else if (response.length==trial.combination.length){
+				if (response.length==trial.combination.length){
 					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
 														"<p>Final Outcome: "+trial_data.payoffS.toString()+"</p>"+
 														"<p>Business: "+trial_data.payoffS.toString()+"</p>"+
@@ -133,11 +119,18 @@ jsPsych.plugins["anna"] = (function() {
 														"</div>"
 					// clear the display
 					display_element.html(feedBackStr);
-					// moveOn();
 				}else{
 					display_element.html("<div id='feedback' style='"+styles.noResponseDiv+"'><p>No response recorded.</p></div>");
-					// moveOn();
 				}
+
+				// move on to the next trial
+				setTimeout(function(){
+					percStr = Math.round(trial.trialInd/Experiment.nTrials*100).toString()+'%';
+					console.log(percStr)
+					$('#jspsych-progressbar-inner').css('width',percStr);
+					display_element.html('');
+					jsPsych.finishTrial(trial_data);}
+					,interTrialInterval);
 			};
 
 
