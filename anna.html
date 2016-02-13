@@ -100,8 +100,17 @@
           });
         }
       },
-      imgPaths : function(){
-        return imgPaths =  this.regular.paths().concat(this.fractals.paths());
+      deval : {
+        items : jsPsych.randomization.sample(imgData.fractals.map(function(val,i){
+          position = ['v','h','v','h','v','h','v'];
+          val.position = position[i];
+          return val
+        }),4),
+        paths : function(){
+          return this.items.map(function(i){
+            return i['path'];
+          });
+        }
       },
       preLoadImages : function(callback){
         //reset progressbar and set at bottom
@@ -109,8 +118,16 @@
         $('.progress').css('top',(screen.height*.5+60).toString()+'px');
         $('#jspsych-progressbar-inner').css('width','0%');
 
+        imgSelection = [
+          this.fractals.paths(),
+          this.fractals.paths(),
+          this.fractals.paths(),
+          this.regular.paths().concat(this.fractals.paths()),
+          this.fractals.paths().concat(this.deval.paths())
+        ];
+        var imgPaths = imgSelection[Experiment.user.sessionID-1];
+
         this.t0=Date.now();
-        var imgPaths = Experiment.user.sessionID==4 ? this.imgPaths() : this.fractals.paths();
         jsPsych.pluginAPI.preloadImages(
           imgPaths,
           function(){
@@ -335,8 +352,8 @@
           };
 
           var getDevalItems = function(){
-            var fractals = Experiment.img.fractals.items
-            var regulars = jsPsych.randomization.sample(Experiment.img.regular.items,4);
+            var fractals = Experiment.img.fractals.items;
+            var regulars = Experiment.img.deval.items;
 
             var itemsF = []
             var itemsR = []
