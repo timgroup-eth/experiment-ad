@@ -218,8 +218,8 @@ jsPsych.plugins["anna"] = (function() {
 					display_element.append(choosePar);
 				},
 				init : function(){
-					this.imgs()
-					this.values()
+					this.imgs();
+					this.values();
 					// this.choose()
 				}
 			};
