@@ -110,7 +110,7 @@
         $('#jspsych-progressbar-inner').css('width','0%');
 
         this.t0=Date.now();
-        var imgPaths = Experiment.user.sessionID==4 : this.imgPaths() : this.fractals.paths();
+        var imgPaths = Experiment.user.sessionID==4 ? this.imgPaths() : this.fractals.paths();
         jsPsych.pluginAPI.preloadImages(
           imgPaths,
           function(){
