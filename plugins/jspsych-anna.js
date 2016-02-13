@@ -109,7 +109,7 @@ jsPsych.plugins["anna"] = (function() {
 				for (var key in flatItem){
 					trial_data[key] = flatItem[key];
 				};
-				console.log(trial_data)
+				// console.log(trial_data)
 
 				// move on to the next trial
 				function moveOn(){
@@ -220,7 +220,7 @@ jsPsych.plugins["anna"] = (function() {
 				init : function(){
 					this.imgs()
 					this.values()
-					this.choose()
+					// this.choose()
 				}
 			};
 
