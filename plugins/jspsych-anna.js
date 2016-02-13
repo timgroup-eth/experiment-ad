@@ -4,6 +4,7 @@ jsPsych.plugins["anna"] = (function() {
 		var plugin = {};
 
 		plugin.trial = function(display_element, trial) {
+			console.log(trial)
 
 			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
@@ -37,7 +38,7 @@ jsPsych.plugins["anna"] = (function() {
 						imgDiv : imgSize+imgStyle+'left:'+(env.centX+250-150-4).toString()+'px;top:'+(env.centY-210-4).toString()+'px;'
 					}
 				},
-				feedbackDiv : 'position:absolute;font-size:20px;font-weight:bold;top:'+(env.centY-60).toString()+'px;left:'+(env.centX-60).toString()+'px;',
+				feedbackDiv : 'position:absolute;font-size:20px;font-weight:bold;top:'+(env.centY-90).toString()+'px;left:'+(env.centX-80).toString()+'px;',
 				noResponseDiv : 'position:absolute;font-size:20px;font-weight:bold;top:'+(env.centY-30).toString()+'px;left:'+(env.centX-110).toString()+'px;',
 				choosePar : 'position:absolute;text-align:center;width:150px;left:'+(env.centX-75).toString()+'px;top:'+(env.centY+230).toString()+'px;'
 			};
@@ -109,7 +110,6 @@ jsPsych.plugins["anna"] = (function() {
 				for (var key in flatItem){
 					trial_data[key] = flatItem[key];
 				};
-				// console.log(trial_data)
 
 				// move on to the next trial
 				function moveOn(){
@@ -122,21 +122,21 @@ jsPsych.plugins["anna"] = (function() {
 					,interTrialInterval);
 				};
 
-				if(trial.condition="D"){
+				if(trial.condition=="D"){
 					display_element.html('');
 					moveOn();
 				}else if (response.length==trial.combination.length){
 					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
-														"<p>Final Outcome: "+trial_data.payoffS.toString()+"</p>"+
+														"<p>Final Outcome</p>"+
 														"<p>Business: "+trial_data.payoffS.toString()+"</p>"+
 														"<p>Society: "+trial_data.payoffC.toString()+"</p>"+
 														"</div>"
 					// clear the display
 					display_element.html(feedBackStr);
-					// moveOn();
+					moveOn();
 				}else{
 					display_element.html("<div id='feedback' style='"+styles.noResponseDiv+"'><p>No response recorded.</p></div>");
-					// moveOn();
+					moveOn();
 				}
 			};
 
@@ -220,7 +220,7 @@ jsPsych.plugins["anna"] = (function() {
 				init : function(){
 					this.imgs();
 					this.values();
-					// this.choose()
+					this.choose()
 				}
 			};
 
