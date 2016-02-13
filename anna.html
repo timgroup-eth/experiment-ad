@@ -110,21 +110,17 @@
         $('#jspsych-progressbar-inner').css('width','0%');
 
         this.t0=Date.now();
-        var imgPaths = this.imgPaths();
-        if (Experiment.user.sessionID==4){
-          jsPsych.pluginAPI.preloadImages(
-            imgPaths,
-            function(){
-              $('#content').remove();
-              Experiment.startJsPsych()},
-            function(i){
-              nImgs = imgPaths.length;
-              $('#jspsych-progressbar-inner').css('width',(i/nImgs*100).toString()+'%');
-            }
-          );
-        }else{
-          jsPsych.pluginAPI.preloadImages(this.fractals.paths(),function(){Experiment.img.imagesLoaded()});
-        };
+        var imgPaths = Experiment.user.sessionID==4 : this.imgPaths() : this.fractals.paths();
+        jsPsych.pluginAPI.preloadImages(
+          imgPaths,
+          function(){
+            $('#content').remove();
+            Experiment.startJsPsych()},
+          function(i){
+            nImgs = imgPaths.length;
+            $('#jspsych-progressbar-inner').css('width',(i/nImgs*100).toString()+'%');
+          }
+        );
       },
       imagesLoaded : function(t0){
         var t1 = (Date.now()-this.t0)/1000.0;
