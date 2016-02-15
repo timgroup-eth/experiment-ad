@@ -167,29 +167,19 @@ jsPsych.plugins["anna"] = (function() {
 
 			//display images
 			displayStimuli = {
-				imgs : function(){
+				imgContainers : function(){
 					if (trial.arrangement.length==1){
-					display_element.html(
-					"<div id='singleImgDiv' class='imgDiv' style='"+
-						styles.single.imgDiv+
-						"background-image:url(./"+
-						trial.imgs[0].path+
-						");'></div>"
-					);
+						display_element.html("<div id='singleImgDiv' class='imgDiv' style='"+styles.single.imgDiv+"'></div>");
 					}else{
 						display_element.html(
-						"<div id='leftImgDiv' class='imgDiv' style='"+
-							styles.double.left.imgDiv+
-							"background-image:url(./"+
-							trial.imgs[0].path+
-							");'></div>"+
-						"<div id='rightImgDiv' class='imgDiv' style='"+
-							styles.double.right.imgDiv+
-							"background-image:url(./"+
-							trial.imgs[1].path+
-							");'></div>"
-						);
+							"<div id='leftImgDiv' class='imgDiv' style='"+styles.double.left.imgDiv+"'></div>"+
+						"<div id='rightImgDiv' class='imgDiv' style='"+styles.double.right.imgDiv+"'></div>");
 					}
+				},
+				imgSrc : function(){
+					$('.imgDiv').each(function(i){
+						$(this).append($('<img>',{src:trial.imgs[i].path}));
+					});
 				},
 				values : function(){
 					var imgDivs = document.getElementsByClassName('imgDiv')
@@ -218,13 +208,15 @@ jsPsych.plugins["anna"] = (function() {
 					display_element.append(choosePar);
 				},
 				init : function(){
-					this.imgs();
+					this.imgContainers();
 					this.values();
-					this.choose()
+					this.imgSrc();
+					this.choose();
 				}
 			};
 
-			displayStimuli.init()
+			displayStimuli.init();
+
 
 			// start the response listener
 			var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
