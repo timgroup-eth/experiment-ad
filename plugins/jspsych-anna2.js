@@ -169,22 +169,14 @@ jsPsych.plugins["anna"] = (function() {
 			displayStimuli = {
 				imgs : function(){
 					if (trial.arrangement.length==1){
-					display_element.html(
-					"<div id='singleImgDiv' class='imgDiv' style='"+
-						styles.single.imgDiv+
-						"background-image:url(./"+
-						trial.imgs[0].path+
-						");'></div>"
-					);
+						display_element.html("<div id='singleImgDiv' class='imgDiv' style='"+styles.single.imgDiv+"'></div>");
+						$('#singleImgDiv').append("<img src='"+trial.imgs[0].path+"' />"+)
 					}else{
 						display_element.html(
-						"<div id='leftImgDiv' class='imgDiv' style='"+
-							styles.double.left.imgDiv+"'>"+
-							"<img src='"+trial.imgs[0].path+"' /></div>"+
-						"<div id='rightImgDiv' class='imgDiv' style='"+
-							styles.double.right.imgDiv+"'>"+
-								"<img src='"+trial.imgs[1].path+"' /></div>"
-						);
+							"<div id='leftImgDiv' class='imgDiv' style='"+styles.double.left.imgDiv+"'></div>"+
+						"<div id='rightImgDiv' class='imgDiv' style='"+styles.double.right.imgDiv+"'></div>");
+						$('#leftImgDiv').append("<img src='"+trial.imgs[0].path+"' />"+)
+						$('#rightImgDiv').append("<img src='"+trial.imgs[1].path+"' />"+)
 					}
 				},
 				values : function(){
