@@ -179,11 +179,11 @@ jsPsych.plugins["anna"] = (function() {
 					}else{
 						display_element.html(
 						"<div id='leftImgDiv' class='imgDiv' style='"+
-							styles.double.left.imgDiv+");'>"+
-							"<img src="+trial.imgs[0].path+"/></div>"+
+							styles.double.left.imgDiv+"'>"+
+							"<img src='"+trial.imgs[0].path+"' /></div>"+
 						"<div id='rightImgDiv' class='imgDiv' style='"+
-							styles.double.right.imgDiv+");'>"+
-								"<img src="+trial.imgs[1].path+"/></div>"
+							styles.double.right.imgDiv+"'>"+
+								"<img src='"+trial.imgs[1].path+"' /></div>"
 						);
 					}
 				},
