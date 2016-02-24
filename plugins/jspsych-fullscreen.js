@@ -197,7 +197,7 @@ jsPsych.plugins['fullscreen'] = (function(){
             fs.addListener();
             if (trial.visibility){
                 fs_plugin_glob.vs_abort = vs.getVisibilityAbort(trial.on_visibility_abort);
-                setTimeout(vs.addListener,400);
+                setTimeout(vs.addListener,500);
               }
             };
             display_element.html('');
