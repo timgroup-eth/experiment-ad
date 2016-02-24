@@ -15,13 +15,11 @@ jsPsych.plugins['fullscreen'] = (function(){
 
       var defaultAbort = function(){
         var str = 'Experiment was terminated by your action.';
-        jsPsych.finishTrial()
-        jsPsych.endExperiment(str)
+        jsPsych.abortExperiment(str)
       };
       var defaultFail = function(){
         var str = 'Your browser doesn\'t provide the necessary functionality. Please contact the principal investigator of this experiment.';
-        jsPsych.finishTrial()
-        jsPsych.endExperiment(str)
+        jsPsych.abortExperiment(str)
       };
 
       // set defaults
@@ -104,7 +102,7 @@ jsPsych.plugins['fullscreen'] = (function(){
             document.addEventListener('mozfullscreenchange',fs_plugin_glob.fs_abort,false);
           }else if (!document.msFullscreenElement && typeof document.msFullscreenElement != 'undefined'){
             document.addEventListener('MSFullscreenChange',fs_plugin_glob.fs_abort,false);
-          }else if (!document.fullscreenchange && typeof document.fullscreenchange != 'undefined'){
+          }else if (!document.fullScreen && typeof document.fullscreenchange != 'undefined'){
             document.addEventListener('fullscreenchange',fs_plugin_glob.fs_abort,false);
           }
         },
@@ -117,8 +115,6 @@ jsPsych.plugins['fullscreen'] = (function(){
       };
 
       var vs = {
-        on_abort : trial.on_visibility_abort,
-        on_fail : trial.on_visibility_fail,
         check : function(){
           if(typeof document.webkitHidden == 'undefined' && typeof document.mozHidden == 'undefined' && +
           typeof document.msHidden == 'undefined' && typeof document.hidden == 'undefined'){
@@ -140,10 +136,31 @@ jsPsych.plugins['fullscreen'] = (function(){
         },
         getVisibilityAbort : function (callObj){
           var visibilityAbort = function(){
-            callObj.call();
-            callObj.call();
-            fs.removeListener();
-            vs.removeListener();
+            if (document.webkitHidden && typeof document.webkitHidden != 'undefined'){
+              console.log('web vs abort')
+              callObj();
+              callObj();
+              fs_plugin_glob.fs_remove();
+              fs_plugin_glob.vs_remove();
+            }else if (document.mozHidden && typeof document.mozHidden != 'undefined'){
+              console.log('moz vs abort')
+              callObj();
+              callObj();
+              fs_plugin_glob.fs_remove();
+              fs_plugin_glob.vs_remove();
+            }else if (document.msHidden && typeof document.msHidden != 'undefined'){
+              console.log('ms vs abort')
+              callObj();
+              callObj();
+              fs_plugin_glob.fs_remove();
+              fs_plugin_glob.vs_remove();
+            }else if (document.hidden && typeof document.hidden != 'undefined'){
+              console.log('vs abort')
+              callObj();
+              callObj();
+              fs_plugin_glob.fs_remove();
+              fs_plugin_glob.vs_remove();
+            }
           }
           return visibilityAbort;
         },
@@ -166,6 +183,9 @@ jsPsych.plugins['fullscreen'] = (function(){
       display_element.children().append("<button id='jspsych-fullscreen-button' style='"+
           trial.buttonStyle+"'><p>" + trial.button + "</p></button>")
 
+      fs_plugin_glob.fs_remove = fs.removeListener;
+      fs_plugin_glob.vs_remove = vs.removeListener;
+
       $('#jspsych-fullscreen-button').on('click',function(){
           if (trial.exit) {
             fs.removeListener();
@@ -177,10 +197,11 @@ jsPsych.plugins['fullscreen'] = (function(){
             fs.addListener();
             if (trial.visibility){
                 fs_plugin_glob.vs_abort = vs.getVisibilityAbort(trial.on_visibility_abort);
-                vs.addListener();}
+                setTimeout(vs.addListener,400);
+              }
             };
-          display_element.html('');
-          jsPsych.finishTrial();
+            display_element.html('');
+            jsPsych.finishTrial();
         });
     };
 

@@ -4,7 +4,6 @@ jsPsych.plugins["anna"] = (function() {
 		var plugin = {};
 
 		plugin.trial = function(display_element, trial) {
-			console.log(trial)
 
 			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
