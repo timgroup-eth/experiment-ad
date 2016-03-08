@@ -23,7 +23,7 @@
         var mandKeys = ['i','c','a','m','ch','r','s'];
         var urlData = jsPsych.data.urlVariables();
         for (var i =0;i<mandKeys.length;i++){
-          if (Object.keys(urlData).indexOf(mandKeys[i])<= -1){
+          if (Object.keys(urlData).indexOf(mandKeys[i])<= -1 || urlData[mandKeys[i]] == ''){
             return false
           };
           return true
@@ -63,7 +63,7 @@
         }else{
           var str = '<p>This URL is invalid. Please try to reopen the link from qualtrics again.<br>If the problem still occurs please contact Anna Dereky at adereky(at)ethz.ch.</p>';
           $('body').html(Experiment.timeline.wrap(str,150));
-          throw new Error('Experiment aborted.');
+          throw new Error('Experiment aborted due to invalid link.');
         };
       }
     };
