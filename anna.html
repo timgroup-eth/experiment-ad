@@ -299,6 +299,7 @@
 
             var regularImgShuffled = Experiment.img.regular.shuffled();
             var items = jsPsych.randomization.shuffle(timeline);
+
             //make structure uniform
             items = items.map(function(i){
               if (typeof i.arrangement != 'object'){
@@ -321,7 +322,7 @@
               i.p = i.arrangement.length == 2 ? [i.p.slice(0,4),i.p.slice(4,8)] : [i.p.slice(0,4)];
               i.d = i.p;
               for(j=0;j<i.arrangement.length;j++){
-                if(i.arrangement[j]==1){
+                if(i.arrangement[j]==1||i.isfoil==1){
                   i.imgs[j] = regularImgShuffled[regIdx];
                   regIdx++
                 }else{
@@ -407,8 +408,9 @@
 
           }
 
-          var itemFunctions = [getTrainingItems,getTrainingItems,getTrainingItems,getExpItems,getDevalItems]
-          var items = itemFunctions[Experiment.user.sessionID-1].call()
+          var itemFunctions = [getTrainingItems,getTrainingItems,getTrainingItems,getExpItems,getDevalItems];
+          var items = itemFunctions[Experiment.user.sessionID-1].call();
+
           b = {
             type: 'anna',
             timeline : items,
