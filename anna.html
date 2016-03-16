@@ -20,7 +20,7 @@
 
     var User = {
       urlHasInfo : function(){
-        var mandKeys = ['i','c','a','m','ch','r','s'];
+        var mandKeys = ['i','c','a','m','ch','r','s','f'];
         var urlData = jsPsych.data.urlVariables();
         for (var i =0;i<mandKeys.length;i++){
           if (Object.keys(urlData).indexOf(mandKeys[i])<= -1 || urlData[mandKeys[i]] == ''){
@@ -153,7 +153,10 @@
       values : [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]],
       user: User,
       img : Img,
-      nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || (parseInt(jsPsych.data.getURLVariable('s'))==5 ? 110 : 280),
+      nTrialsPerSession : {
+        1 : 280, 2 : 280, 3 : 280, 4 : 500, 5 : 110
+      },
+      nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || this.nTrialsPerSession[jsPsych.data.getURLVariable('s')],
       displayStr : function(str){
         $('#fsDiv').html(str);
       },
@@ -404,6 +407,7 @@
             var items = itemsF.concat(itemsR)
             items = jsPsych.randomization.repeat(items,10);
             items = jsPsych.randomization.shuffle(items);
+            console.log(items.length)
             return items;
 
           }
@@ -472,7 +476,7 @@
           url: './store2.php',
           data: {
             subjectID: [Experiment.user.UID,Experiment.user.sessionID,Experiment.user.sessionCode].join('-'),
-            folder: 'anna_1603',
+            folder: jsPsych.data.getURLVariable('f'),
             csvStrings: csvStrings,
             dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.user)]
           }
@@ -511,7 +515,7 @@
         acceptedBrowsers = {
           'Firefox': 43,
           'Chrome': 45,
-          'Safari': 9
+          'Safari': 8
         };
 
         if(Object.keys(acceptedBrowsers).indexOf(b.name) == -1){
