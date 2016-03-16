@@ -16,14 +16,11 @@ $mail->SMTPSecure = 'tls';
 $mail->SMTPAuth = true;
 $mail->Username = "helloadrianoesch@gmail.com";
 $mail->Password = "slalaphi-158";
-$mail->setFrom('adereky@ethz.ch', 'Timgroup Experiment');
-$mail->addReplyTo('adereky@ethz.ch', 'Anna Dereky');
-$mail->addAddress('adrianoesch@gmx.ch', '');
-$mail->Subject = 'Reminder Notification';
+$mail->setFrom('', 'Timgroup Experiment');
+$mail->addAddress('adereky@ethz.ch', '');
+$mail->Subject = 'Timgroup Experiment Notification';
 
-//Read an HTML message body from an external file, convert referenced images to embedded,
-//convert HTML into a basic plain-text alternative body
-$mail->msgHTML("<h3>Hi</h3><p>Your next session of the Timgroup experiment is now ready!</p><p>Best regards, the notifciation bot.</p>");
+$mail->msgHTML("<h4>Hi!</h4><p>Your next session of the Timgroup experiment is now ready!</p><p>Best regards,<br> the notifciation bot.</p>");
 
 //send the message, check for errors
 if (!$mail->send()) {
