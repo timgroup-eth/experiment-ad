@@ -47,14 +47,16 @@ jsPsych.plugins['fullscreen'] = (function(){
             elem.mozRequestFullScreen(elem.ALLOW_KEYBOARD_INPUT)
           }else if(elem.webkitRequestFullscreen) {
             elem.webkitRequestFullscreen(elem.ALLOW_KEYBOARD_INPUT);
+            elem.webkitRequestFullscreen(elem.ALLOW_KEYBOARD_INPUT);
             if (!(navigator.userAgent.indexOf("Safari") > -1 && navigator.userAgent.indexOf("Chrome") > -1)){
-              document.addEventListener('keydown',function(e){e.preventDefault()});
-          };
+              document.onkeydown = function(e){e.preventDefault()}
+            };
           }else if(elem.msRequestFullscreen) {
             elem.msRequestFullscreen(elem.ALLOW_KEYBOARD_INPUT);
           }
         },
         exit : function () {
+          document.onkeydown = function(){return true}
           if (document.exitFullscreen) {
             document.exitFullscreen();
           } else if (document.msExitFullscreen) {

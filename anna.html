@@ -18,145 +18,141 @@
     </head>
     <script>
 
-    var User = {
-      urlHasInfo : function(){
-        var mandKeys = ['i','c','a','m','ch','r','s','f'];
-        var urlData = jsPsych.data.urlVariables();
-        for (var i =0;i<mandKeys.length;i++){
-          if (Object.keys(urlData).indexOf(mandKeys[i]) == -1 || urlData[mandKeys[i]] == ''){
-            return false
-          };
-        };
-        return true
-      },
-      getUserInfo : function(){
-        var urlData = jsPsych.data.urlVariables();
-        var charityMap = {
-          1 : 'WWF',
-          2 : 'Greenpeace',
-          3 : 'Declaration of Bern',
-          4 : 'Amnesty International',
-          7 : 'Caritas',
-          8 : 'Terres des Hommes',
-          9 : 'Unicef',
-          10 : 'Medecins sans Frontieres'
-        };
-        var userData = {
-          UID : urlData.i,
-          arrowcode : urlData.a.split('').map(function(i){return parseInt(i)}),
-          colorcode : urlData.c.split('').map(function(i){return parseInt(i)}),
-          mefirst : parseInt(urlData.m),
-          charity : isNaN(urlData.ch) ? urlData.ch : charityMap[parseInt(urlData.ch)] ,
-          responseID : urlData.r,
-          sessionID : parseInt(urlData.s),
-          sessionCode : jsPsych.randomization.randomID(12),
-          sessionStart : new Date().toString().replace(',','')
-        };
-        return userData
-      },
-      init: function(){
-        if (this.urlHasInfo()){
-          inf = this.getUserInfo();
-          jsPsych.data.addProperties({UID:inf.UID,sessionID:inf.sessionID});
-          inf.generalSessionCodes = ['1vd9r1vhu4yv','0reb2suc8jbl','ypy73dyx4lg5','zo51u9vqj4yw','h9g75ro00e3t'];
-          return inf;
-        }else{
-          var str = '<p>This URL is invalid. Please try to reopen the link from qualtrics again.<br>If the problem still occurs please contact Anna Dereky at adereky(at)ethz.ch.</p>';
-          $('body').html(Experiment.timeline.wrap(str,150));
-          throw new Error('Experiment aborted due to invalid link.');
-        };
-      }
-    };
-
-    var Img = {
-      regular : {
-        items : function(){
-          var t = imgData.regular;
-          var horiz = jsPsych.randomization.repeat(['v','h'],imgData.regular.length/2)
-          t.map(function(val,i){
-            val.position = horiz[i];
-            return val
-          })
-          return t
-        }(),
-        shuffled : function(){
-          return jsPsych.randomization.shuffle(this.items);
-        },
-        paths : function(){
-          return this.items.map(function(i){
-            return i['path'];
-          });
-        }
-      },
-      fractals : {
-        items : imgData.fractals.map(function(val,i){
-          position = ['v','h','v','h','v','h','v'];
-          val.position = position[i];
-          return val
-        }),
-        paths : function(){
-          return this.items.map(function(i){
-            return i['path'];
-          });
-        }
-      },
-      deval : {
-        items : jsPsych.randomization.sample(imgData.fractals.map(function(val,i){
-          position = ['v','h','v','h','v','h','v'];
-          val.position = position[i];
-          return val
-        }),4),
-        paths : function(){
-          return this.items.map(function(i){
-            return i['path'];
-          });
-        }
-      },
-      preLoadImages : function(callback){
-        //reset progressbar and set at bottom
-        $('#fsDiv').append(Experiment.timeline.wrap('<p><center>Loading Session. This might take a while.</center></p>',screen.height*.5));
-        $('.progress').css('top',(screen.height*.5+60).toString()+'px');
-        $('#jspsych-progressbar-inner').css('width','0%');
-
-        imgSelection = [
-          this.fractals.paths(),
-          this.fractals.paths(),
-          this.fractals.paths(),
-          this.regular.paths().concat(this.fractals.paths()),
-          this.fractals.paths().concat(this.deval.paths())
-        ];
-        var imgPaths = imgSelection[Experiment.user.sessionID-1];
-
-        this.t0=Date.now();
-        jsPsych.pluginAPI.preloadImages(
-          imgPaths,
-          function(){
-            $('#content').remove();
-            Experiment.startJsPsych()},
-          function(i){
-            nImgs = imgPaths.length;
-            $('#jspsych-progressbar-inner').css('width',(i/nImgs*100).toString()+'%');
-          }
-        );
-      },
-      imagesLoaded : function(t0){
-        var t1 = (Date.now()-this.t0)/1000.0;
-        this.loadedStatus = "loaded";
-      },
-      init : function(){
-        this.loadedStatus = 'not loaded';
-        this.preLoadImages();
-      }
-    };
-
     var nTrialsPerSession = {
         1 : 280, 2 : 280, 3 : 280, 4 : 500, 5 : 110
     };
 
     var Experiment = {
       values : [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]],
-      user: User,
-      img : Img,
+      user: {
+        urlHasInfo : function(){
+          var mandKeys = ['i','c','a','m','ch','r','s','f'];
+          var urlData = jsPsych.data.urlVariables();
+          for (var i =0;i<mandKeys.length;i++){
+            if (Object.keys(urlData).indexOf(mandKeys[i]) == -1 || urlData[mandKeys[i]] == ''){
+              return false
+            };
+          };
+          return true
+        },
+        getUserInfo : function(){
+          var urlData = jsPsych.data.urlVariables();
+          var charityMap = {
+            1 : 'WWF',
+            2 : 'Greenpeace',
+            3 : 'Declaration of Bern',
+            4 : 'Amnesty International',
+            7 : 'Caritas',
+            8 : 'Terres des Hommes',
+            9 : 'Unicef',
+            10 : 'Medecins sans Frontieres'
+          };
+          var userData = {
+            UID : urlData.i,
+            arrowcode : urlData.a.split('').map(function(i){return parseInt(i)}),
+            colorcode : urlData.c.split('').map(function(i){return parseInt(i)}),
+            mefirst : parseInt(urlData.m),
+            charity : isNaN(urlData.ch) ? urlData.ch : charityMap[parseInt(urlData.ch)] ,
+            responseID : urlData.r,
+            sessionID : parseInt(urlData.s),
+            sessionCode : jsPsych.randomization.randomID(12),
+            sessionStart : new Date().toString().replace(',','')
+          };
+          return userData
+        },
+        init: function(){
+          if (this.urlHasInfo()){
+            inf = this.getUserInfo();
+            jsPsych.data.addProperties({UID:inf.UID,sessionID:inf.sessionID});
+            inf.generalSessionCodes = ['1vd9r1vhu4yv','0reb2suc8jbl','ypy73dyx4lg5','zo51u9vqj4yw','h9g75ro00e3t'];
+            return inf;
+          }else{
+            var str = '<p>This URL is invalid. Please try to reopen the link from qualtrics again.<br>If the problem still occurs please contact Anna Dereky at adereky(at)ethz.ch.</p>';
+            $('body').html(Experiment.timeline.wrap(str,150));
+            throw new Error('Experiment aborted due to invalid link.');
+          };
+        }
+      },
+      img : {
+        regular : {
+          items : function(){
+            var t = imgData.regular;
+            var horiz = jsPsych.randomization.repeat(['v','h'],imgData.regular.length/2)
+            t.map(function(val,i){
+              val.position = horiz[i];
+              return val
+            })
+            return t
+          }(),
+          shuffled : function(){
+            return jsPsych.randomization.shuffle(this.items);
+          },
+          paths : function(){
+            return this.items.map(function(i){
+              return i['path'];
+            });
+          }
+        },
+        fractals : {
+          items : imgData.fractals.map(function(val,i){
+            position = ['v','h','v','h','v','h','v'];
+            val.position = position[i];
+            return val
+          }),
+          paths : function(){
+            return this.items.map(function(i){
+              return i['path'];
+            });
+          }
+        },
+        deval : {
+          items : jsPsych.randomization.sample(imgData.fractals.map(function(val,i){
+            position = ['v','h','v','h','v','h','v'];
+            val.position = position[i];
+            return val
+          }),4),
+          paths : function(){
+            return this.items.map(function(i){
+              return i['path'];
+            });
+          }
+        },
+        preLoadImages : function(callback){
+          //reset progressbar and set at bottom
+          $('#fsDiv').append(Experiment.timeline.wrap('<p><center>Loading Session. This might take a while.</center></p>',screen.height*.5));
+          $('.progress').css('top',(screen.height*.5+60).toString()+'px');
+          $('#jspsych-progressbar-inner').css('width','0%');
+
+          imgSelection = [
+            this.fractals.paths(),
+            this.fractals.paths(),
+            this.fractals.paths(),
+            this.regular.paths().concat(this.fractals.paths()),
+            this.fractals.paths().concat(this.deval.paths())
+          ];
+          var imgPaths = imgSelection[Experiment.user.sessionID-1];
+
+          this.t0=Date.now();
+          jsPsych.pluginAPI.preloadImages(
+            imgPaths,
+            function(){
+              $('#content').remove();
+              Experiment.startJsPsych()},
+            function(i){
+              nImgs = imgPaths.length;
+              $('#jspsych-progressbar-inner').css('width',(i/nImgs*100).toString()+'%');
+            }
+          );
+        },
+        imagesLoaded : function(t0){
+          var t1 = (Date.now()-this.t0)/1000.0;
+          this.loadedStatus = "loaded";
+        },
+        init : function(){
+          this.loadedStatus = 'not loaded';
+          this.preLoadImages();
+        }
+      },
       nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || nTrialsPerSession[jsPsych.data.getURLVariable('s')],
       displayStr : function(str){
         $('#fsDiv').html(str);
@@ -511,9 +507,9 @@
           }
         };
 
-        b = getBrowserInfo();
+        var b = getBrowserInfo();
 
-        acceptedBrowsers = {
+        var acceptedBrowsers = {
           'Firefox': 43,
           'Chrome': 45,
           'Safari': 8
