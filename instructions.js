@@ -13,5 +13,5 @@ var instructions = {
 
   confirmation : '<h2>This session is over</h2><p>Please go back to the qualtrics survey and paste the following code into the\
                 input form <br>(use right-click in Safari): <strong><span id="conf_code"></span></strong></p>\
-                <p>After copying the confirmation code, you can close this browser window or tab.</p>'
+                <p>After copying the confirmation code, you can close this browser window or tab.</p><p id="notification"></p>'
 };

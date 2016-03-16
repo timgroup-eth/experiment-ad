@@ -23,6 +23,34 @@
     };
 
     var Experiment = {
+      utils : {
+        addMailToSchedule : function(){
+          var notifMail = $('#notifInput').val();
+          if(!this.validateEmail(notifMail)){
+            alert('Please insert a valid email address.')
+            return
+          };
+          var hours = parseInt(jsPsych.data.urlVariables()['n']);
+          var t = new Date();
+          var off = t.getTimezoneOffset()+60;
+          t.setTime(Date.now()+(off*60*1000)+(hours*60*60*1000));
+
+          var notifJob = ['0',t.toString(),notifMail].join('\t ')+'\n';
+          $.ajax({
+            type: 'post',
+            cache: false,
+            url: './appendNotifJob.php',
+            data: {
+              notifJob : notifJob
+            }
+          });
+          $('#notification').remove();
+        },
+        validateEmail : function (email) {
+          var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return re.test(email);
+        }
+      },
       values : [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]],
       user: {
         urlHasInfo : function(){
@@ -230,6 +258,13 @@
               setTimeout(function(){
                 var htmlStr = [Experiment.user.sessionCode,Experiment.user.generalSessionCodes[Experiment.user.sessionID-1]].join('-');
                 $('#conf_code').html(htmlStr);
+                urlData = jsPsych.data.urlVariables()
+                if(Object.keys(urlData).indexOf('n')> -1){
+                  var htmlStr = '<p>If you wish to be notified by email, when your next experiment session is available, insert you email here:  \
+                  <input id="notifInput" type="text" size="40"/> \
+                  <button id="notifButton" onclick="Experiment.utils.addMailToSchedule()">Notify me</button>';
+                  $('#notification').html(htmlStr);
+                };
               },200);
             }
           };
@@ -421,9 +456,9 @@
         },
         init : function(){
           var timeline  =  [];
-          timeline.push(this.enter_fullscreen_block());
-          timeline.push(this.anna_block());
-          timeline.push(this.exit_fullscreen_block());
+          // timeline.push(this.enter_fullscreen_block());
+          // timeline.push(this.anna_block());
+          // timeline.push(this.exit_fullscreen_block());
           timeline.push(this.confirmation_block());
           return timeline;
         }
