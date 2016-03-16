@@ -7,7 +7,7 @@ require './PHPMailer/PHPMailerAutoload.php';
 $openshift_data_dir = $_ENV["OPENSHIFT_DATA_DIR"];
 $notifFile = $openshift_data_dir.'notifications.txt';
 $notifStr = file_get_contents($notifFile);
-$notifList = explode('\n',$notifStr);
+$notifList = explode("\n",$notifStr);
 $t0 = strtotime('Now');
 
 function sendNotification($to){
@@ -29,7 +29,7 @@ function sendNotification($to){
 };
 
 for($i=0;$i<sizeof($notifList);$i++){
-  $row = explode('\t',$notifList[$i]);
+  $row = explode("\t",$notifList[$i]);
   echo $row;
   $done = $row[0];
   if($done=='1'){
@@ -42,7 +42,7 @@ for($i=0;$i<sizeof($notifList);$i++){
   $mailTo = $row[2];
   sendNotification($mailTo);
   $row[0] = '1';
-  $notifList[$i] = implode('\t',$row);
+  $notifList[$i] = implode("\t",$row);
 };
 
-file_put_contents(implode('\n',$notifList));
+file_put_contents(implode("\n",$notifList));
