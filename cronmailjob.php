@@ -16,28 +16,29 @@ function sendNotification($to){
   $mail->isSMTP();
   $mail->SMTPDebug = 2;
   $mail->Debugoutput = 'html';
-  $mail->Host = 'mail.ethz.ch';
+  $mail->Host = 'smtp.gmail.com';
   $mail->Port = 587;
   $mail->SMTPSecure = 'tls';
   $mail->SMTPAuth = true;
-  $mail->Username = "oescha";
-  $mail->Password = $_ENV["aomail"];
+  $mail->Username = "helloadrianoesch@gmail.com";
+  $mail->Password = "slalaphi-158";
   $mail->setFrom('adereky@ethz.ch', 'Timgroup Experiment');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
   $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
+  echo 'sent';
 };
+
+sendNotification("adrianoesch@gmx.ch");
 
 for($i=0;$i<sizeof($notifList);$i++){
   $row = explode("\t",$notifList[$i]);
   $done = $row[0];
   if($done=='1'){
-    echo "done: ".implode("\t",$row);
     continue;
   };
   $t1 = strtotime($row[1]);
-  if($t1>$t0){
-    echo "not yet: ".implode("\t",$row);
+  if($t1<$t0){
     continue;
   };
   $mailTo = $row[2];
@@ -45,9 +46,8 @@ for($i=0;$i<sizeof($notifList);$i++){
     continue;
   };
   sendNotification($mailTo);
-  echo "sent: ".implode("\t",$row);
   $row[0] = '1';
   $notifList[$i] = implode("\t",$row);
 };
 
-file_put_contents(implode("\n",$notifList));
+file_put_contents($notifFile,implode("\n",$notifList));
