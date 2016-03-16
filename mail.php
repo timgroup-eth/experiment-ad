@@ -7,7 +7,7 @@
 //This should be done in your php.ini, but this is how to do it if you don't have access to that
 date_default_timezone_set('Etc/UTC');
 
-require '../PHPMailerAutoload.php';
+require '/PHPMailer/PHPMailerAutoload.php';
 
 //Create a new PHPMailer instance
 $mail = new PHPMailer;
@@ -46,7 +46,7 @@ $mail->Username = "helloadrianoesch@gmail.com";
 $mail->Password = "slalaphi-158";
 
 //Set who the message is to be sent from
-$mail->setFrom('helloadrianoesch@gmail.com', 'Timgroup Experiment');
+$mail->setFrom('adereky@ethz.ch', 'Timgroup Experiment');
 
 //Set an alternative reply-to address
 $mail->addReplyTo('adereky@ethz.ch', 'Anna Dereky');
@@ -55,17 +55,11 @@ $mail->addReplyTo('adereky@ethz.ch', 'Anna Dereky');
 $mail->addAddress('adrianoesch@gmx.ch', '');
 
 //Set the subject line
-$mail->Subject = 'PHPMailer GMail SMTP test';
+$mail->Subject = 'Reminder Notification';
 
 //Read an HTML message body from an external file, convert referenced images to embedded,
 //convert HTML into a basic plain-text alternative body
-$mail->msgHTML(file_get_contents('contents.html'), dirname(__FILE__));
-
-//Replace the plain text body with one created manually
-$mail->AltBody = 'This is a plain-text message body';
-
-//Attach an image file
-$mail->addAttachment('images/phpmailer_mini.png');
+$mail->msgHTML("");
 
 //send the message, check for errors
 if (!$mail->send()) {
