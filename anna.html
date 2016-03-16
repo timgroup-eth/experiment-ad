@@ -23,11 +23,11 @@
         var mandKeys = ['i','c','a','m','ch','r','s','f'];
         var urlData = jsPsych.data.urlVariables();
         for (var i =0;i<mandKeys.length;i++){
-          if (Object.keys(urlData).indexOf(mandKeys[i])<= -1 || urlData[mandKeys[i]] == ''){
+          if (Object.keys(urlData).indexOf(mandKeys[i]) == -1 || urlData[mandKeys[i]] == ''){
             return false
           };
-          return true
         };
+        return true
       },
       getUserInfo : function(){
         var urlData = jsPsych.data.urlVariables();
@@ -149,14 +149,15 @@
       }
     };
 
+    var nTrialsPerSession = {
+        1 : 280, 2 : 280, 3 : 280, 4 : 500, 5 : 110
+    };
+
     var Experiment = {
       values : [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]],
       user: User,
       img : Img,
-      nTrialsPerSession : {
-        1 : 280, 2 : 280, 3 : 280, 4 : 500, 5 : 110
-      },
-      nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || this.nTrialsPerSession[jsPsych.data.getURLVariable('s')],
+      nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || nTrialsPerSession[jsPsych.data.getURLVariable('s')],
       displayStr : function(str){
         $('#fsDiv').html(str);
       },
@@ -522,7 +523,7 @@
           $('body').html('<h4>You must either use Chrome, Firefox or Safari to take part in this experiment.</h4>');
           console.log(b);
           throw new Error('Experiment aborted due to invalid browser.');
-        }else if(b.version < acceptedBrowsers[b.name]){
+        }else if(b.version <= acceptedBrowsers[b.name]){
           $('body').html('<h4>The browser version is too outdated for this experiment. Please update your browser and try again.</h4>');
           console.log(b);
           throw new Error('Experiment aborted due to unaccepted browser.');
