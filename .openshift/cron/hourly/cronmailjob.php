@@ -7,11 +7,10 @@ require $_ENV['OPENSHIFT_REPO_DIR'].'PHPMailer/PHPMailerAutoload.php';
 $openshift_data_dir = $_ENV["OPENSHIFT_DATA_DIR"];
 $notifFile = $openshift_data_dir.'notifications.txt';
 $notifStr = file_get_contents($notifFile);
-$notifList = explode('\n',$notifStr);
+$notifList = explode("\n",$notifStr);
 $t0 = strtotime('Now');
 
 function sendNotification($to){
-  //Create a new PHPMailer instance
   $mail = new PHPMailer;
   $mail->isSMTP();
   $mail->SMTPDebug = 2;
@@ -21,15 +20,16 @@ function sendNotification($to){
   $mail->SMTPSecure = 'tls';
   $mail->SMTPAuth = true;
   $mail->Username = "oescha";
-  $mail->Password = $_ENV["aomail"];
-  $mail->setFrom('adereky@ethz.ch', 'Timgroup Experiment');
+  $mail->Password = "slalaphi-158";
+  $mail->setFrom('oescha@ethz.ch', 'Timgroup Experiment');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
   $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
+  $mail->send();
 };
 
 for($i=0;$i<sizeof($notifList);$i++){
-  $row = explode('\t',$notifList[$i]);
+  $row = explode("\t",$notifList[$i]);
   $done = $row[0];
   if($done=='1'){
     continue;
@@ -39,9 +39,12 @@ for($i=0;$i<sizeof($notifList);$i++){
     continue;
   };
   $mailTo = $row[2];
+  if($mailTo==''){
+    continue;
+  };
   sendNotification($mailTo);
   $row[0] = '1';
-  $notifList[$i] = implode('\t',$row);
+  $notifList[$i] = implode("\t",$row);
 };
 
-file_put_contents(implode('\n',$notifList));
+file_put_contents($notifFile,implode("\n",$notifList));
