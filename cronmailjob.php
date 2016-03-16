@@ -22,7 +22,7 @@ function sendNotification($to){
   $mail->SMTPAuth = true;
   $mail->Username = "oescha";
   $mail->Password = "slalaphi-158";
-  // $mail->setFrom('adereky@ethz.ch', 'Timgroup Experiment');
+  $mail->setFrom('oescha@ethz.ch', 'Timgroup Experiment');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
   $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
