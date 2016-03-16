@@ -523,7 +523,7 @@
           $('body').html('<h4>You must either use Chrome, Firefox or Safari to take part in this experiment.</h4>');
           console.log(b);
           throw new Error('Experiment aborted due to invalid browser.');
-        }else if(b.version <= acceptedBrowsers[b.name]){
+        }else if(b.version < acceptedBrowsers[b.name]){
           $('body').html('<h4>The browser version is too outdated for this experiment. Please update your browser and try again.</h4>');
           console.log(b);
           throw new Error('Experiment aborted due to unaccepted browser.');
