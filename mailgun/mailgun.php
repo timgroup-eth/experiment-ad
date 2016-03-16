@@ -1,10 +1,10 @@
 <?php
-$to = $_POST['to'];
-$deliveryTime = $_POST['deliveryTime'];
-
 # Include the Autoloader (see "Libraries" for install instructions)
 require 'vendor/autoload.php';
 use Mailgun\Mailgun;
+
+$to = $_POST['to'];
+$deliveryTime = $_POST['deliveryTime'];
 
 # Instantiate the client.
 $mgClient = new Mailgun('key-7b3005c3c0cc5a7dc6df8f85dca4a725');
