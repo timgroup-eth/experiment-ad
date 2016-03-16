@@ -59,7 +59,7 @@ $mail->Subject = 'Reminder Notification';
 
 //Read an HTML message body from an external file, convert referenced images to embedded,
 //convert HTML into a basic plain-text alternative body
-$mail->msgHTML("");
+$mail->msgHTML("<h3>Hi</h3><p>Your next session of the Timgroup experiment is now ready!</p><p>Best regards, the notifciation bot.</p>");
 
 //send the message, check for errors
 if (!$mail->send()) {
