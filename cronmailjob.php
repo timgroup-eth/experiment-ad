@@ -30,17 +30,22 @@ function sendNotification($to){
 
 for($i=0;$i<sizeof($notifList);$i++){
   $row = explode("\t",$notifList[$i]);
-  echo $row;
   $done = $row[0];
   if($done=='1'){
+    echo "done: ".implode("\t",$row);
     continue;
   };
   $t1 = strtotime($row[1]);
-  if($t1<$t0){
+  if($t1>$t0){
+    echo "not yet: ".implode("\t",$row);
     continue;
   };
   $mailTo = $row[2];
+  if($mailTo==''){
+    continue;
+  };
   sendNotification($mailTo);
+  echo "sent: ".implode("\t",$row);
   $row[0] = '1';
   $notifList[$i] = implode("\t",$row);
 };
