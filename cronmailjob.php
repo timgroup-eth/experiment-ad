@@ -33,25 +33,24 @@ function sendNotification($to){
   }
 };
 
-sendNotification("adrianoesch@gmx.ch");
 
-// for($i=0;$i<sizeof($notifList);$i++){
-//   $row = explode("\t",$notifList[$i]);
-//   $done = $row[0];
-//   if($done=='1'){
-//     continue;
-//   };
-//   $t1 = strtotime($row[1]);
-//   if($t1<$t0){
-//     continue;
-//   };
-//   $mailTo = $row[2];
-//   if($mailTo==''){
-//     continue;
-//   };
-//   sendNotification($mailTo);
-//   $row[0] = '1';
-//   $notifList[$i] = implode("\t",$row);
-// };
-//
-// file_put_contents($notifFile,implode("\n",$notifList));
+for($i=0;$i<sizeof($notifList);$i++){
+  $row = explode("\t",$notifList[$i]);
+  $done = $row[0];
+  if($done=='1'){
+    continue;
+  };
+  $t1 = strtotime($row[1]);
+  if($t1<$t0){
+    continue;
+  };
+  $mailTo = $row[2];
+  if($mailTo==''){
+    continue;
+  };
+  sendNotification($mailTo);
+  $row[0] = '1';
+  $notifList[$i] = implode("\t",$row);
+};
+
+file_put_contents($notifFile,implode("\n",$notifList));
