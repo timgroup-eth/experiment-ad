@@ -35,7 +35,7 @@ for($i=0;$i<sizeof($notifList);$i++){
     continue;
   };
   $t1 = strtotime($row[1]);
-  if($t1<$t0){
+  if($t1>$t0){
     continue;
   };
   $mailTo = $row[2];
