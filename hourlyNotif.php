@@ -20,7 +20,7 @@ function sendNotification($to){
   $mail->SMTPSecure = 'tls';
   $mail->SMTPAuth = true;
   $mail->Username = "oescha";
-  $mail->Password = "slalaphi-158";
+  $mail->Password = getenv('MAIL_AO');
   $mail->setFrom('oescha@ethz.ch', 'Timgroup Experiment');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
