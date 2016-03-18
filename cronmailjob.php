@@ -17,8 +17,8 @@ function sendNotification($to){
   $mail->SMTPDebug = 2;
   $mail->Debugoutput = 'html';
   $mail->Host = 'smtp.gmail.com';
-  $mail->Port = 25;
-  $mail->SMTPSecure = 'ssl';
+  $mail->Port = 587;
+  $mail->SMTPSecure = 'tls';
   $mail->SMTPAuth = true;
   $mail->Username = "timgroup.eth@gmail.com";
   $mail->Password = getenv('PWD_GMAIL_TIMGROUP');
