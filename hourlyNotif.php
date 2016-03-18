@@ -15,13 +15,13 @@ function sendNotification($to){
   $mail->isSMTP();
   $mail->SMTPDebug = 2;
   $mail->Debugoutput = 'html';
-  $mail->Host = 'mail.ethz.ch';
+  $mail->Host = 'smtp.gmail.com';
   $mail->Port = 587;
   $mail->SMTPSecure = 'tls';
   $mail->SMTPAuth = true;
   $mail->Username = "timgroup.eth@gmail.com";
   $mail->Password = getenv('PWD_GMAIL_TIMGROUP');
-  $mail->setFrom('timgroup.eth@gmail.com', 'Timgroup Experiment');
+  $mail->setFrom('timgroup.eth@gmail.com', 'Timgroup ETH');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
   $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
