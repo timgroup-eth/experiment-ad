@@ -33,7 +33,7 @@
           var hours = parseInt(jsPsych.data.urlVariables()['n']);
           var t = new Date();
           var off = t.getTimezoneOffset()+60;
-          t.setTime(Date.now()+(off*60*1000)+(hours*60*60*1000));
+          t.setTime(Date.now()+(off*60*1000)+(hours*60*60*1000)-jsPsych.data.getLastTrialData()['time_elapsed']);
 
           var notifJob = ['0',t.toString(),notifMail].join('\t ')+'\n';
           $.ajax({
@@ -128,10 +128,10 @@
         },
         saveData : function(){
           function getUserDataAsCSV(){
-            var keys = Object.keys(Experiment.user)
+            var keys = Object.keys(Experiment.session);
             var header = '';
-            var dataStr = ''
-            var info = Experiment.user
+            var dataStr = '';
+            var info = Experiment.session;
 
             for (i=0;i<keys.length;i++){
               var t = typeof info[keys[i]] == 'object' ? info[keys[i]].join('') : info[keys[i]];
@@ -147,10 +147,10 @@
             cache: false,
             url: './store2.php',
             data: {
-              subjectID: [Experiment.user.UID,Experiment.user.sessionID,Experiment.user.sessionCode].join('-'),
+              subjectID: [Experiment.session.UID,Experiment.session.sessionID,Experiment.session.sessionCode].join('-'),
               folder: jsPsych.data.getURLVariable('f'),
               csvStrings: csvStrings,
-              dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.user)]
+              dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.session)]
             }
           });
           console.log('Data saved.');
@@ -162,7 +162,7 @@
           }else{
             Experiment.utils.startJsPsych()
           };
-        },
+        }
       },
       settings : {
         values : [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[60,50,60,80]],
@@ -172,7 +172,7 @@
         nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || nTrialsPerSession[jsPsych.data.getURLVariable('s')],
         generalSessionCodes : ['1vd9r1vhu4yv','0reb2suc8jbl','ypy73dyx4lg5','zo51u9vqj4yw','h9g75ro00e3t']
       },
-      user: {
+      url : {
         urlHasInfo : function(){
           var mandKeys = ['i','c','a','m','ch','r','s','f'];
           var urlData = jsPsych.data.urlVariables();
@@ -208,14 +208,14 @@
           };
           return userData
         },
-        init: function(){
+        getSessionVars : function(){
           if (this.urlHasInfo()){
             inf = this.getUserInfo();
             jsPsych.data.addProperties({UID:inf.UID,sessionID:inf.sessionID});
             return inf;
           }else{
             var str = '<p>This URL is invalid. Please try to reopen the link from qualtrics again.<br>If the problem still occurs please contact Anna Dereky at adereky(at)ethz.ch.</p>';
-            $('body').html(Experiment.timeline.wrap(str,150));
+            $('body').html(Experiment.utils.wrap(str,150));
             throw new Error('Experiment aborted due to invalid link.');
           };
         }
@@ -277,7 +277,7 @@
             this.regular.paths().concat(this.fractals.paths()),
             this.fractals.paths().concat(this.deval.paths())
           ];
-          var imgPaths = imgSelection[Experiment.user.sessionID-1];
+          var imgPaths = imgSelection[Experiment.session.sessionID-1];
 
           this.t0=Date.now();
           jsPsych.pluginAPI.preloadImages(
@@ -341,7 +341,7 @@
             buttontext: "Save & Exit",
             html : html,
             on_finish : function(data){
-              Experiment.user.sessionEnd = new Date().toString().replace(',','');
+              Experiment.session.sessionEnd = new Date().toString().replace(',','');
               Experiment.saveData();
             }
           };
@@ -354,7 +354,7 @@
             pages : [page],
             on_trial_start : function(){
               setTimeout(function(){
-                var htmlStr = [Experiment.user.sessionCode,Experiment.settings.generalSessionCodes[Experiment.user.sessionID-1]].join('-');
+                var htmlStr = [Experiment.session.sessionCode,Experiment.settings.generalSessionCodes[Experiment.session.sessionID-1]].join('-');
                 $('#conf_code').html(htmlStr);
                 urlData = jsPsych.data.urlVariables()
                 if(Object.keys(urlData).indexOf('n')> -1){
@@ -370,20 +370,20 @@
         },
         anna_block : function(){
           var values =  Experiment.settings.values;
-          var colorcode = Experiment.user.colorcode;
-          var arrowcode = Experiment.user.arrowcode;
-          var mefirst = Experiment.user.mefirst;
+          var colorcode = Experiment.session.colorcode;
+          var arrowcode = Experiment.session.arrowcode;
+          var mefirst = Experiment.session.mefirst;
           var arrowswitch = [2,3,0,1];
           var mefirstswitch = [1,0,3,2];
 
           var getColorindex = function(){
             var colorindex = [];
-            if (Experiment.user.sessionID==1){
+            if (Experiment.session.sessionID==1){
               orig = [0,0,0,0,0,0,0,0,0,0];
               colorindex = orig;
               for (i=0;i<6;i++){colorindex =  orig.concat(colorindex.map( function(x) {return(x + 1)})); };
             }
-            var addNTrials = Experiment.user.sessionID == 1 ? 30 : 40;
+            var addNTrials = Experiment.session.sessionID == 1 ? 30 : 40;
             var tempindex = [];
             for (t=0;t<7;t++){
               for(j=0;j<addNTrials;j++){
@@ -542,7 +542,7 @@
           }
 
           var itemFunctions = [getTrainingItems,getTrainingItems,getTrainingItems,getExpItems,getDevalItems];
-          var items = itemFunctions[Experiment.user.sessionID-1].call();
+          var items = itemFunctions[Experiment.session.sessionID-1].call();
 
           b = {
             type: 'anna',
@@ -562,7 +562,7 @@
       },
       init : function(){
         this.utils.checkBrowser();
-        this.user = this.user.init();
+        this.session = this.url.getSessionVars();
         this.utils.backgroundDiv();
         this.utils.loadImgsAndStartExperiment();
       }

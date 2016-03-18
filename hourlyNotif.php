@@ -19,9 +19,9 @@ function sendNotification($to){
   $mail->Port = 587;
   $mail->SMTPSecure = 'tls';
   $mail->SMTPAuth = true;
-  $mail->Username = "oescha";
-  $mail->Password = getenv('MAIL_AO');
-  $mail->setFrom('oescha@ethz.ch', 'Timgroup Experiment');
+  $mail->Username = "timgroup.eth@gmail.com";
+  $mail->Password = getenv('PWD_GMAIL_TIMGROUP');
+  $mail->setFrom('timgroup.eth@gmail.com', 'Timgroup Experiment');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
   $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
