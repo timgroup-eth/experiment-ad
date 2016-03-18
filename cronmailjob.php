@@ -16,13 +16,13 @@ function sendNotification($to){
   $mail->isSMTP();
   $mail->SMTPDebug = 2;
   $mail->Debugoutput = 'html';
-  $mail->Host = 'mail.ethz.ch';
+  $mail->Host = 'smtp.gmail.com';
   $mail->Port = 587;
   $mail->SMTPSecure = 'tls';
   $mail->SMTPAuth = true;
-  $mail->Username = "oescha";
-  $mail->Password = getenv('MAIL_AO');
-  $mail->setFrom('oescha@ethz.ch', 'Timgroup Experiment');
+  $mail->Username = "timgroup.eth@gmail.com";
+  $mail->Password = getenv('PWD_GMAIL_TIMGROUP');
+  $mail->setFrom('timgroup.eth@gmail.com', 'Timgroup Experiment');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
   $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
@@ -32,25 +32,25 @@ function sendNotification($to){
       echo "Message sent!";
   }
 };
-
-
-for($i=0;$i<sizeof($notifList);$i++){
-  $row = explode("\t",$notifList[$i]);
-  $done = $row[0];
-  if($done=='1'){
-    continue;
-  };
-  $t1 = strtotime($row[1]);
-  if($t1>$t0){
-    continue;
-  };
-  $mailTo = $row[2];
-  if($mailTo==''){
-    continue;
-  };
-  sendNotification($mailTo);
-  $row[0] = '1';
-  $notifList[$i] = implode("\t",$row);
-};
-
-file_put_contents($notifFile,implode("\n",$notifList));
+sendNotification('adrianoesch@gmx.ch');
+//
+// for($i=0;$i<sizeof($notifList);$i++){
+//   $row = explode("\t",$notifList[$i]);
+//   $done = $row[0];
+//   if($done=='1'){
+//     continue;
+//   };
+//   $t1 = strtotime($row[1]);
+//   if($t1>$t0){
+//     continue;
+//   };
+//   $mailTo = $row[2];
+//   if($mailTo==''){
+//     continue;
+//   };
+//   sendNotification($mailTo);
+//   $row[0] = '1';
+//   $notifList[$i] = implode("\t",$row);
+// };
+//
+// file_put_contents($notifFile,implode("\n",$notifList));
