@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8"/>
+      <title>Timgroup: Experiment 1</title>
+      <script src="./jquery.min.js"></script>
+      <script src="./jspsych.js"></script>
+      <link href="./css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  </head>
+  <body>
+    <div style="margin-left:100px;margin-top:50px;width:800px;">
+    <h2>Welcome</h2>
+      <p>We're going to run an experiment and would like to test our setup on various environments.<br>
+        You must either use recent version of Chrome, Firefox or Safari to take part.
+      </p>
+      <p>
+        When you see a picture, please press an arrow key. For Link 2 you'll have
+        to press two successive key strokes within a short time.</p>
+    <p><b>Experiment:</b><br>
+      Please open the following links in successive order and insert the confirmation code you get at the end of each session.
+    <ol>
+      <li><a target="_blank" id="link1">Link</a> => Confirmation Code 1: <input id="conf1" type="text" size=48 /></li>
+      <li><a target="_blank" id="link2">Link</a> => Confirmation Code 2: <input id="conf2" type="text" size=48 /></li>
+      <li><a target="_blank" id="link3">Link</a> => Confirmation Code 3: <input id="conf3" type="text" size=48 /></li>
+    </ol>
+    <p><b>System:</b><br> Which operating system are you using? Please answer with name and version (f.e. Windows 8.1 or Mac OsX 9.0):<br><input id="os" type="text" size=48 /></p>
+    <p><b>Browser:</b><br> Which browser are you using? Please answer with name and version (f.e. Chrome 45).:<br><input id="browser" type="text" size=48 /></p>
+    <button onclick="submit()">Submit</button>
+  </div>
+  </body>
+  <script>
+  var uid = jsPsych.randomization.randomID(12);
+  var c = jsPsych.randomization.shuffle([0,1,2,3,4,5,6]).join('');
+  var a = jsPsych.randomization.shuffle([0,1,0,1,0,1,0]).join('');
+  var m = jsPsych.randomization.sample([0,1],1).join('');
+
+  var getSessionLink = function(s){
+    var href = './anna.html?nTrials=10&ch=1&f=env&r=env&c='+c+'&m='+m+'&a='+a+'&i='+uid+'&s='+s.toString();
+    return href;
+  };
+
+  var confCodes = ['1vd9r1vhu4yv','zo51u9vqj4yw','h9g75ro00e3t'];
+
+  $('#link1').attr({href:getSessionLink('1')});
+  $('#link2').attr({href:getSessionLink('4')});
+  $('#link3').attr({href:getSessionLink('5')});
+
+  var getInput=function(){
+    var input = [];
+    input.push($('#conf1').val());
+    input.push($('#conf2').val());
+    input.push($('#conf3').val());
+    input.push($('#os').val());
+    input.push($('#browser').val());
+    return input;
+  };
+
+  var validate = function(input){
+    var vals = input;
+    for(i=0;i<vals.length;i++){
+      if (vals[i]==''){
+        return 'empty';
+      };
+      if(i<3){
+        if(vals[i].split('-')[1].replace(' ','')!=confCodes[i]){
+          return 'code';
+        };
+      };
+    };
+    return 'success';
+  };
+
+  var saveData = function(input){
+    var header = ['uid','conf1','conf2','conf3','os','browser'].join('\t');
+    var row = [uid].concat(input).join('\t');
+    var csvString = header+'\n'+row+'\n';
+
+    $.ajax({
+      type: 'post',
+      cache: false,
+      url: './store2.php',
+      data: {
+        subjectID: uid,
+        folder: 'env_pilot',
+        csvStrings: csvString,
+        dataAsJSON: ['env_pilot']
+      }
+    });
+    console.log('Data saved.');
+    window.location = './env_pilot_conf.html?i='+uid;
+  };
+
+  var submit = function(){
+    var input = getInput();
+    var validation = validate(input);
+    if(validation=='success'){
+      saveData(input);
+    }else if(validation=='empty'){
+      alert('At least one input field is empty.');
+    }else{
+      alert('At least one confirmation code is incorrect.');
+    };
+  };
+
+  </script>
+</html>
