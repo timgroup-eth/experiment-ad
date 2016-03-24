@@ -80,9 +80,9 @@
       cache: false,
       url: './store2.php',
       data: {
-        subjectID: uid,
-        folder: 'env_pilot',
-        csvStrings: csvString,
+        subjectID: uid+'-0',
+        folder: 'env',
+        csvStrings: [csvString],
         dataAsJSON: ['env_pilot']
       }
     });
