@@ -11,11 +11,11 @@
     <div style="margin-left:100px;margin-top:50px;width:800px;">
     <h2>Welcome</h2>
       <p>We're going to run an experiment and would like to test our setup on various environments.<br>
-        You must either use recent version of Chrome, Firefox or Safari to take part.
+        To take part you must use a recent version of either Chrome, Firefox or Safari .
       </p>
       <p>
-        When you see a picture, please press an arrow key. For Link 2 you'll have
-        to press two successive key strokes within a short time.</p>
+        When you see a picture, please press either the left or right arrow key. In the session from the second link you'll have
+        to press two successive key strokes within a short time when there are two pictures.</p>
     <p><b>Experiment:</b><br>
       Please open the following links in successive order and insert the confirmation code you get at the end of each session.
     <ol>
@@ -23,9 +23,13 @@
       <li><a target="_blank" id="link2">Link</a> => Confirmation Code 2: <input id="conf2" type="text" size=48 /></li>
       <li><a target="_blank" id="link3">Link</a> => Confirmation Code 3: <input id="conf3" type="text" size=48 /></li>
     </ol>
-    <p><b>System:</b><br> Which operating system are you using? Please answer with name and version (f.e. Windows 8.1 or Mac OsX 9.0):<br><input id="os" type="text" size=48 /></p>
-    <p><b>Browser:</b><br> Which browser are you using? Please answer with name and version (f.e. Chrome 45).:<br><input id="browser" type="text" size=48 /></p>
+    <p><b>System:</b><br> Which operating system are you using? Please answer with name and version <br>
+      (f.e. Windows 8.1 or Mac OsX 9.0):<br><input id="os" type="text" size=48 /></p>
+    <p><b>Browser:</b><br> Which browser are you using? Please answer with name and version (f.e. Chrome 45):<br><input id="browser" type="text" size=48 /></p>
+    <p><b>Feedback:</b> (optional)<br> In case you want to give us some feedback, here is some space:
+      <br><input id="feedback" type="text" size=120 /></p>
     <button onclick="submit()">Submit</button>
+    <div style="height:100px;"></div>
   </div>
   </body>
   <script>
@@ -52,20 +56,21 @@
     input.push($('#conf3').val());
     input.push($('#os').val());
     input.push($('#browser').val());
+    input.push($('#feedback').val());
     return input;
   };
 
   var validate = function(input){
     var vals = input;
-    for(i=0;i<vals.length;i++){
+    for(i=0;i<vals.length-1;i++){
       if (vals[i]==''){
         return 'empty';
       };
-      if(i<3){
-        if(vals[i].split('-')[1].replace(' ','')!=confCodes[i]){
-          return 'code';
-        };
-      };
+      // if(i<3){
+      //   if(vals[i].split('-')[1].replace(' ','')!=confCodes[i]){
+      //     return 'code';
+      //   };
+      // };
     };
     return 'success';
   };
