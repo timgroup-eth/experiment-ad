@@ -405,6 +405,7 @@
           };
 
           var getTrainingItems = function(){
+
             var colorindex = getColorindex();
             var fractals = Experiment.img.fractals.items;
 
@@ -438,6 +439,7 @@
           };
 
           var getExpItems = function(){
+
             var fractals = Experiment.img.fractals.items;
 
             var regularImgShuffled = Experiment.img.regular.shuffled();
@@ -463,7 +465,7 @@
               i.v = [-1,-1];
               i.a = [-1,-1];
               i.p = i.arrangement.length == 2 ? [i.p.slice(0,4),i.p.slice(4,8)] : [i.p.slice(0,4)];
-              i.d = i.p;
+              i.d = [];
               for(j=0;j<i.arrangement.length;j++){
                 if(i.arrangement[j]==1||i.isfoil==1){
                   i.imgs[j] = regularImgShuffled[regIdx];
@@ -481,12 +483,12 @@
                     i.p[j] = vals.map(function(val,j){return vals[arrowswitch[j]]})
                   };
                 };
-
+                var vals = i.p[j];
                 //for all conditions
                 if (mefirst==0){
-                  var vals = i.d[j]
-                  i.d[j] = vals.map(function(val,j){return vals[mefirstswitch[j]]})
+                  vals = vals.map(function(val,j){return vals[mefirstswitch[j]]})
                 }
+                i.d[j]=vals;
               };
               return i
             });
