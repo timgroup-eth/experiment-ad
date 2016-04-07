@@ -14,10 +14,10 @@
         To take part you must use a recent version of either Chrome, Firefox or Safari.
       </p>
       <p>
-        When you see a picture, please press either the left or right arrow key. In the session from the second link you'll have
-        to press two successive key strokes within a short time when there are two pictures.</p>
+        Please follow the links below and whenever you see a picture, press either the left or right arrow key. In the session from the second link you'll have
+        to press two successive key strokes within a short time whenever you see two pictures.</p>
     <p><b>Experiment:</b><br>
-      Please open the following links in successive order and insert the confirmation code you get at the end of each session.
+      Please open the following links in successive order and insert the confirmation code once you get to the end of each session.
     <ol>
       <li><a target="_blank" id="link1">Link</a> => Confirmation Code 1: <input id="conf1" type="text" size=48 /></li>
       <li><a target="_blank" id="link2">Link</a> => Confirmation Code 2: <input id="conf2" type="text" size=48 /></li>
@@ -28,6 +28,8 @@
     <p><b>Browser:</b><br> Which browser are you using (<a href="http://www.whatsmybrowser.org/"target="_blank">help</a>)? Please answer with name and version (f.e. Chrome 45):<br><input id="browser" type="text" size=48 /></p>
     <p><b>Feedback:</b> (optional)<br> In case you want to give us some feedback, here is some space:
       <br><input id="feedback" type="text" size=120 /></p>
+    <p><b>Contributor ID:</b><br> What's your contributor ID:
+      <br><input id="contributor_id" type="text" size=120 /></p>
     <button onclick="submit()">Submit</button>
     <div style="height:100px;"></div>
   </div>
@@ -57,6 +59,7 @@
     input.push($('#os').val());
     input.push($('#browser').val());
     input.push($('#feedback').val());
+    input.push($('#contributor_id').val());
     return input;
   };
 
