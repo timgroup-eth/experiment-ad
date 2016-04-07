@@ -34,6 +34,17 @@
 
     var Experiment = {
       utils : {
+        displayConfCode : function(){
+          var htmlStr = [Experiment.session.sessionCode,Experiment.settings.generalSessionCodes[Experiment.session.sessionID-1]].join('-');
+          $('#conf_code').html(htmlStr);
+          urlData = jsPsych.data.urlVariables()
+          if(Object.keys(urlData).indexOf('n')> -1){
+            var htmlStr = '<p>If you wish to be notified by email, when your next experiment session is available, insert you email here:  \
+            <input id="notifInput" type="text" size="40"/> \
+            <button id="notifButton" onclick="Experiment.utils.addMailToSchedule()">Notify me</button>';
+            $('#notification').html(htmlStr);
+          };
+        },
         addMailToSchedule : function(){
           var notifMail = $('#notifInput').val();
           if(!this.validateEmail(notifMail)){
@@ -358,22 +369,14 @@
           return b;
         },
         confirmation_block : function(){
-          var displayConfCode = function(){
-            var htmlStr = [Experiment.session.sessionCode,Experiment.settings.generalSessionCodes[Experiment.session.sessionID-1]].join('-');
-            $('#conf_code').html(htmlStr);
-            urlData = jsPsych.data.urlVariables()
-            if(Object.keys(urlData).indexOf('n')> -1){
-              var htmlStr = '<p>If you wish to be notified by email, when your next experiment session is available, insert you email here:  \
-              <input id="notifInput" type="text" size="40"/> \
-              <button id="notifButton" onclick="Experiment.utils.addMailToSchedule()">Notify me</button>';
-              $('#notification').html(htmlStr);
-            };
-          };
 
-          page = Experiment.utils.wrap(instructions.confirmation+'<script>displayConfCode()</script>',100)
+          page = Experiment.utils.wrap( instructions.confirmation ,100)
           b = {
             type : 'instructions',
-            pages : [page]
+            pages : [page],
+            on_trial_start : function(){
+              setTimeout(Experiment.utils.displayConfCode,200);
+            }
           };
           return b;
         },
