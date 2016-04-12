@@ -53,28 +53,20 @@
 
   var getInput=function(){
     var input = [];
-    var opts = [];
     input.push($('#conf1').val());
-    opts.push('required')
     input.push($('#conf2').val());
-    opts.push('required')
     input.push($('#conf3').val());
-    opts.push('required')
     input.push($('#os').val());
-    opts.push('required')
     input.push($('#browser').val());
-    opts.push('required')
     input.push($('#feedback').val());
-    opts.push('optional')
     input.push($('#contributor_id').val());
-    opts.push('optional')
     return input;
   };
 
   var validate = function(input){
     var vals = input;
     for(i=0;i<vals.length-1;i++){
-      if(opts[i]=='optional'){continue}
+      if(i==vals.length-2){continue}
       if (vals[i]==''){
         return 'empty';
       };
