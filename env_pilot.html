@@ -145,6 +145,10 @@
       $('body').html('<h4>The browser version is too outdated for this experiment. Please update your browser and try again.</h4>');
       console.log(b);
       throw new Error('Experiment aborted due to unaccepted browser.');
+    }else if(screen.width < 800){
+      $('body').html('<h4>Your screen is too small. We need at least 800px screen width to display stimuli.</h4>');
+      console.log(b);
+      throw new Error('Experiment aborted due to small screen.');
     }
   }
 
