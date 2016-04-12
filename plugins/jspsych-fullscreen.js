@@ -65,6 +65,7 @@ jsPsych.plugins['fullscreen'] = (function(){
             document.mozCancelFullScreen();
           } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
+            document.webkitExitFullscreen();
           };
         },
         getFullScreenAbort : function (callObj){
