@@ -1,0 +1,70 @@
+<html>
+<head>
+  <script src="./jquery.min.js"></script>
+</head>
+<div><h2>Link Generator</h2>(* are mandatory)</div>
+<div>
+<p>Colorcode:* <input id="colorcodeinput" ></input></p>
+<p>Arrowcode:* <input id="arrowcodeinput"></input></p>
+<p>Mefirst:* <input id="mefirstinput"></input></p>
+<p>Session:* <input id="sessioninput"></input></p>
+<p>Folder: <input id="folderinput"></input></p>
+<p>Response ID: <input id="responseinput"></input></p>
+<p>User ID: <input id="userinput"></input></p>
+<p>Charity: <input id="charityinput"></input></p>
+<p>nTrials: <input id="ntrialsinput"></input></p></div>
+<div>
+  <p><button type="button" onclick="showPrompt()">Get Link</button></p>
+  <p><button type="button" onclick="goTo()">Go to Experiment</button></p>
+</div>
+
+<script>
+function getInput(){
+  var input = [];
+  $('input').each((i,j)=>input.push($(j).val()));
+  for(i=0;i<4;i++){
+    if(input[i]==''){
+      alert('At least one of the first four input fields is empty.');
+      return 'fail';
+    };
+  };
+  for(i=4;i<input.length;i++){
+    if (input[i]==''){
+      input[i]='default';
+    };
+  };
+
+  return input;
+};
+
+function getLink(opts){
+  input = getInput();
+  if(input == 'fail'){
+    return;
+  };
+  url = 'https://lab-timgroup.rhcloud.com/anna.html?'+
+  'c='+input[0]+'&'+
+  'a='+input[1]+'&'+
+  'm='+input[2]+'&'+
+  's='+input[3]+'&'+
+  'f='+input[4]+'&'+
+  'r='+input[5]+'&'+
+  'i='+input[6]+'&'+
+  'ch='+input[7];
+  if(input[8]!='default'){
+    url = url+'&nTrials='+input[8];
+  };
+  return url
+};
+
+function goTo(){
+  url = getLink();
+  window.location = url;
+}
+
+function showPrompt(){
+  url = getLink();
+  window.prompt('Here you go',url);
+}
+</script>
+<html>
