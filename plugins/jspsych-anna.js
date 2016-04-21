@@ -7,6 +7,7 @@ jsPsych.plugins["anna"] = (function() {
 
 			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
+			var maxFirstResponse = 5000;
 
 			var env = {
 			      screenW: screen.width,
@@ -58,6 +59,19 @@ jsPsych.plugins["anna"] = (function() {
 						c: 3
 					}
 			};
+
+			// move on to the next trial
+			var moveOn = function(trial_data){
+				var cur = parseInt(jsPsych.currentTimelineNodeID().split('-')[2]);
+				percStr = Math.round((cur+1)/Experiment.settings.nTrials*100).toString()+'%';
+				$('#jspsych-progressbar-inner').css('width',percStr);
+				setTimeout(function(){
+					display_element.html('');
+					console.log(trial_data)
+					jsPsych.finishTrial(trial_data);}
+				,interTrialInterval);
+			};
+
 			// function to end trial when it is time
 			var end_trial = function(response) {
 
@@ -65,66 +79,43 @@ jsPsych.plugins["anna"] = (function() {
 				jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
 
 				// gather the data to store for the trial
-				var trial_data = {
-					responseroot : response[0].key_string,
-					timingroot : response[0].rt/1000.0,
-				};
-
-					if (response.length==trial.combination.length){
-					var rootChoice = keyMap['root'][response[0].key_string];
-					var rootP = trial.combination.length == 2 ? trial.p[rootChoice] : trial.p[0];
-					var finalResponse = response[response.length-1];
-					trial_data.payoffS = rootP[keyMap[finalResponse.key_string]['s']];
-					trial_data.payoffC = rootP[keyMap[finalResponse.key_string]['c']];
-					if(trial.combination.length==2){
-						trial_data.response2nd = response[1].key_string
-						trial_data.timing2nd = (response[1].rt - response[0].rt) / 1000.0
+				if(typeof response == 'undefined'){
+					var trial_data = { timeoutRoot : 1};
+				}else{
+					var trial_data = {
+						responseroot : response[0].key_string,
+						timingroot : response[0].rt/1000.0,
+						timeoutroot : 0
 					};
+					if (response.length==trial.combination.length){
+						var rootChoice = keyMap['root'][response[0].key_string];
+						var rootP = trial.combination.length == 2 ? trial.p[rootChoice] : trial.p[0];
+						var finalResponse = response[response.length-1];
+						trial_data.payoffS = rootP[keyMap[finalResponse.key_string]['s']];
+						trial_data.payoffC = rootP[keyMap[finalResponse.key_string]['c']];
+						if(trial.combination.length==2){
+							trial_data.response2nd = response[1].key_string;
+							trial_data.timing2nd = (response[1].rt - response[0].rt) / 1000.0;
+							trial_data.timout2nd = 0
+						};
+					};
+					if (trial.combination.length==2&response.length==1){
+						trial_data.timeout2nd = 1;
+					}
 				};
 
-				JSON.flatten = function(data) {
-					var result = {};
-			    function recurse (cur, prop) {
-			        if (Object(cur) !== cur) {
-			            result[prop] = cur;
-			        } else if (Array.isArray(cur)) {
-			             for(var i=0, l=cur.length; i<l; i++)
-			                 recurse(cur[i], prop + "[" + i + "]");
-			            if (l == 0)
-			                result[prop] = [];
-			        } else {
-			            var isEmpty = true;
-			            for (var p in cur) {
-			                isEmpty = false;
-			                recurse(cur[p], prop ? prop+"."+p : p);
-			            }
-			            if (isEmpty && prop)
-			                result[prop] = {};
-			        }
-			    }
-			    recurse(data, "");
-			    return result;
-				}
-				var flatItem = JSON.flatten(trial);
+				var flatItem = Experiment.utils.flattenJSON(trial);
 				for (var key in flatItem){
 					trial_data[key] = flatItem[key];
 				};
 
-				// move on to the next trial
-				function moveOn(){
-					var cur = parseInt(jsPsych.currentTimelineNodeID().split('-')[2]);
-					percStr = Math.round((cur+1)/Experiment.settings.nTrials*100).toString()+'%';
-					$('#jspsych-progressbar-inner').css('width',percStr);
-					setTimeout(function(){
-						display_element.html('');
-						console.log(trial_data)
-						jsPsych.finishTrial(trial_data);}
-					,interTrialInterval);
-				};
 
-				if(trial.condition=="D"){
+				if(typeof response == 'undefined'){
+					display_element.html("<div id='feedback' style='"+styles.noResponseDiv+"'><p>Response was too slow.</p></div>");
+					moveOn(trial_data);
+				}else if(trial.condition=="D"){
 					display_element.html('');
-					moveOn();
+					moveOn(trial_data);
 				}else if (response.length==trial.combination.length){
 					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
 														"<p>Final Outcome</p>"+
@@ -133,13 +124,12 @@ jsPsych.plugins["anna"] = (function() {
 														"</div>"
 					// clear the display
 					display_element.html(feedBackStr);
-					moveOn();
+					moveOn(trial_data);
 				}else{
 					display_element.html("<div id='feedback' style='"+styles.noResponseDiv+"'><p>2nd response was too slow.</p></div>");
-					moveOn();
+					moveOn(trial_data);
 				}
 			};
-
 
 			var kbResps = []
 			// function to handle responses by the subject
@@ -148,6 +138,7 @@ jsPsych.plugins["anna"] = (function() {
 				if (trial.combination.length==1){
 					end_trial(kbResps)
 				}else{
+					clearTimeout(timeOutHandlers[0])
 					timeOutHandlers.push(setTimeout(end_trial,interResponseInterval,kbResps));
 					if (kbResps.length==1){
 						if(kbInfo.key_string=='leftarrow'){
@@ -217,6 +208,7 @@ jsPsych.plugins["anna"] = (function() {
 
 			displayStimuli.init();
 
+			timeOutHandlers.push(setTimeout(end_trial,maxFirstResponse));
 
 			// start the response listener
 			var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
