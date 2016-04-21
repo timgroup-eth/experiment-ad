@@ -80,7 +80,7 @@
   };
 
   var saveData = function(input){
-    var header = ['uid','conf1','conf2','conf3','os','browser'].join('\t');
+    var header = ['uid','conf1','conf2','conf3','os','browser','feedback'].join('\t');
     var row = [uid].concat(input).join('\t');
     var csvString = header+'\n'+row+'\n';
 

@@ -350,6 +350,9 @@
               jsPsych.finishTrial();
               jsPsych.endExperiment('Your browser doesn\'t provide the necessary functionality. We recommend \
               using an up-to-date version of Firefox or Chrome.');
+            },
+            on_finish : function(){
+              $('#fsDiv').css({'height':screen.height,'width':screen.width});
             }
           };
           return b

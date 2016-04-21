@@ -135,7 +135,7 @@ jsPsych.plugins["anna"] = (function() {
 					display_element.html(feedBackStr);
 					moveOn();
 				}else{
-					display_element.html("<div id='feedback' style='"+styles.noResponseDiv+"'><p>No response recorded.</p></div>");
+					display_element.html("<div id='feedback' style='"+styles.noResponseDiv+"'><p>2nd response was too slow.</p></div>");
 					moveOn();
 				}
 			};
