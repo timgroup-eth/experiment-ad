@@ -42,7 +42,7 @@ function getInput(){
 function getLink(opts){
   input = getInput();
   if(input == 'fail'){
-    return;
+    return 'fail';
   };
   url = 'https://lab-timgroup.rhcloud.com/anna.html?'+
   'c='+input[0]+'&'+
@@ -61,12 +61,16 @@ function getLink(opts){
 
 function goTo(){
   url = getLink();
-  window.location = url;
+  if (url!='fail'){
+    window.location = url;
+  }
 }
 
 function showPrompt(){
   url = getLink();
-  window.prompt('Here you go:',url);
+  if (url!='fail'){
+    window.prompt('Here you go:',url);
+  }
 }
 
 function goRandom(){
