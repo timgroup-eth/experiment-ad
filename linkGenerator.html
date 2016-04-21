@@ -3,6 +3,7 @@
   <script src="./jquery.min.js"></script>
 </head>
 <div><h2>Link Generator</h2>(* are mandatory)</div>
+<p><button type="button" onclick="goRandom()">Go to random experiment</button></p>
 <div>
   <p>Colorcode:* <input id="colorcodeinput" ></input></p>
   <p>Arrowcode:* <input id="arrowcodeinput"></input></p>
@@ -66,6 +67,18 @@ function goTo(){
 function showPrompt(){
   url = getLink();
   window.prompt('Here you go:',url);
+}
+
+function goRandom(){
+  window.location = 'https://lab-timgroup.rhcloud.com/anna.html?'+
+  'c=0123456&'+
+  'a=0101011&'+
+  'm=1&'+
+  's=1&'+
+  'f=dev&'+
+  'r=dev&'+
+  'i=dev&'+
+  'ch=dev';
 }
 </script>
 <html>
