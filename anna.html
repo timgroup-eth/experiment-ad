@@ -13,7 +13,6 @@
         <script src="./imgData.js"></script>
         <script src="./timeline.js"></script>
         <script src="./instructions.js"></script>
-        <!-- <script> var ip = "<?php echo $_SERVER['REMOTE_ADDR']; ?>";</script> -->
         <link href="./css/jspsych.css" rel="stylesheet" type="text/css"></link>
     </head>
     <script>
@@ -34,6 +33,9 @@
 
     var Experiment = {
       utils : {
+        setIpAddress : function(){
+          $.ajax('/ip-address.php',{method:'GET',success:function(data){Experiment.session.ipAddress = data}});
+        },
         displayConfCode : function(){
           var htmlStr = [Experiment.session.sessionCode,Experiment.settings.generalSessionCodes[Experiment.session.sessionID-1]].join('-');
           $('#conf_code').html(htmlStr);
@@ -579,6 +581,7 @@
       init : function(){
         this.utils.checkBrowser();
         this.session = this.url.getSessionVars();
+        this.utils.setIpAddress();
         this.utils.backgroundDiv();
         this.utils.loadImgsAndStartExperiment();
       }
