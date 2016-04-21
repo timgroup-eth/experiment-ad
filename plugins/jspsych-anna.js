@@ -4,7 +4,7 @@ jsPsych.plugins["anna"] = (function() {
 		var plugin = {};
 
 		plugin.trial = function(display_element, trial) {
-
+			console.log(trial)
 			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
 			var maxFirstResponse = 5000;
@@ -138,7 +138,7 @@ jsPsych.plugins["anna"] = (function() {
 				if (trial.combination.length==1){
 					end_trial(kbResps)
 				}else{
-					clearTimeout(timeOutHandlers[0])
+					if(timeOutHandlers.length>0){clearTimeout(timeOutHandlers[0])};
 					timeOutHandlers.push(setTimeout(end_trial,interResponseInterval,kbResps));
 					if (kbResps.length==1){
 						if(kbInfo.key_string=='leftarrow'){
@@ -208,7 +208,9 @@ jsPsych.plugins["anna"] = (function() {
 
 			displayStimuli.init();
 
-			timeOutHandlers.push(setTimeout(end_trial,maxFirstResponse));
+			if(trial.sessionNr == 4){
+				timeOutHandlers.push(setTimeout(end_trial,maxFirstResponse));
+			};
 
 			// start the response listener
 			var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
