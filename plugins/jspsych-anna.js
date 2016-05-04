@@ -80,7 +80,7 @@ jsPsych.plugins["anna"] = (function() {
 
 				// gather the data to store for the trial
 				if(typeof response == 'undefined'){
-					var trial_data = { timeoutRoot : 1};
+					var trial_data = { timeoutroot : 1};
 				}else{
 					var trial_data = {
 						responseroot : response[0].key_string,
@@ -96,7 +96,7 @@ jsPsych.plugins["anna"] = (function() {
 						if(trial.combination.length==2){
 							trial_data.response2nd = response[1].key_string;
 							trial_data.timing2nd = (response[1].rt - response[0].rt) / 1000.0;
-							trial_data.timout2nd = 0
+							trial_data.timeout2nd = 0
 						};
 					};
 					if (trial.combination.length==2&response.length==1){
