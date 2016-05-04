@@ -1,0 +1,167 @@
+<style>
+  #color{
+    height:300px;
+    width:300px;
+    background:rgb(0,0,0);
+    margin-top:50px;
+    left:50%;
+    border-radius: 10px;
+  }
+  #feedback{
+    text-align:center;
+    font-weight:bold;
+    font-size:20px;
+    padding-top:140px;
+  }
+  #cont{
+    width:100%;
+    height:300px;
+  }
+  #table{
+    height:250px;
+    margin-top:30px;
+  }
+  #trial{
+    background: rgb(230,230,230);
+    border-radius: 20px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    width:100%;
+  }
+  td{
+    width:150px;
+    font-size:20px;
+    font-weight:bold;
+    text-align:center;
+  }
+  .colcont{
+    margin-left:5px;
+    float:center;
+    border-radius: 5px;
+    height : 250px;
+    width : 150px;
+  }
+  img{
+    width:150px;
+    float:center;
+    /*position: relative;
+    left:0px;
+    top:50px;*/
+  }
+  .tds{
+    padding-top:15px;
+    height:50px:
+    width:50px;
+    font-size:20px;
+    font-weight:bold;
+    color:rgb(0,0,0);
+    text-align:center;
+  }
+</style>
+<div><h1>Codetest Experiment Dereky:</h1></div>
+<div>Paste Colorcode here: <input  id="colorcodeinput" ></input></div>
+<div>Paste Arrowcode here: <input  id="arrowcodeinput"></input></div>
+<div>Paste Mefirst here: <input  id="mefirstinput"></input></div>
+
+<p><button type="button" onclick="getCode()"> Show Mapping </button></p>
+<p><button type="button" onclick="getDefault()"> Get Default </button></p>
+
+
+<table style="margin-top:20px;margin-bottom:20px">
+  <tr>
+    <p style="font-weight:bold;padding-top:20px;"> The subjects payoff is displayed <span id="firstvsecond">XXX</span>.</p>
+  </tr>
+<tr>
+  <td id="top1" class='disp'></td>
+  <td id="top2" class='disp'></td>
+  <td id="top3" class='disp'></td>
+  <td id="top4" class='disp'></td>
+  <td id="top5" class='disp'></td>
+  <td id="top6" class='disp'></td>
+  <td id="top7" class='disp'></td>
+</tr>
+</table>
+<script>
+
+// new settings introduced may 4th 2016
+values = [[60,50,30,70],[70,40,30,70],[70,60,60,80],[80,30,50,80],[70,50,50,80],[60,40,50,80],[50,60,60,70]];
+
+fractals = {0:"./img/fractals/0.jpg",
+            1:"./img/fractals/1.jpg",
+            2:"./img/fractals/2.jpg",
+            3:"./img/fractals/3.jpg",
+            4:"./img/fractals/4.jpg",
+            5:"./img/fractals/5.jpg",
+            6:"./img/fractals/6.jpg"
+          }
+
+function getColCont(i){
+     colcont = document.createElement("div");
+     colcont.className = "colcont"
+     tds = document.createElement('td')
+     tds.className = "tds"
+     if (arrowcode[i]==1){
+         tds1 = tds.cloneNode(true)
+         tds2 = tds.cloneNode(true)
+         if (mefirst==1){
+           tds1.innerHTML = values[colorcode[i]][2].toString()+"/"+values[colorcode[i]][3].toString()
+           tds2.innerHTML = values[colorcode[i]][0].toString()+"/"+values[colorcode[i]][1].toString()
+         } else {
+           tds1.innerHTML = values[colorcode[i]][3].toString()+"/"+values[colorcode[i]][2].toString()
+           tds2.innerHTML = values[colorcode[i]][1].toString()+"/"+values[colorcode[i]][0].toString()
+         };
+       }else{
+         tds1 = tds.cloneNode(true)
+         tds2 = tds.cloneNode(true)
+         if (mefirst==1){
+            tds1.innerHTML = values[colorcode[i]][0].toString()+"/"+values[colorcode[i]][1].toString()
+            tds2.innerHTML = values[colorcode[i]][2].toString()+"/"+values[colorcode[i]][3].toString()
+         } else {
+           tds1.innerHTML = values[colorcode[i]][1].toString()+"/"+values[colorcode[i]][0].toString()
+           tds2.innerHTML = values[colorcode[i]][3].toString()+"/"+values[colorcode[i]][2].toString()
+         };
+       };
+     colcont.appendChild(tds1);
+     colcont.appendChild(tds2);
+    //  layer = document.createElement("span");
+    //  layer.innerHTML = "<img src='https://mtecethz.qualtrics.com/CP/Graphic.php?IM=IM_4VgxTCUQxrYKsrr'></img>";
+    //  colcont.appendChild(layer);
+     colcont.style.background = '';
+      img = document.createElement('img');
+      img.src = fractals[i];
+      colcont.appendChild(img)
+     return(colcont)};
+
+
+function getCode(){
+  colorcode = (document.getElementById('colorcodeinput').value).split('')
+  arrowcode = (document.getElementById('arrowcodeinput').value).split('')
+  mefirst = parseInt(document.getElementById('mefirstinput').value)
+
+  if (mefirst==0){
+    document.getElementById('firstvsecond').innerHTML = "second"
+  } else {
+    document.getElementById('firstvsecond').innerHTML = "first"
+  }
+ disps = document.getElementsByClassName('disp');
+ for(i=0;i<disps.length;i++){
+   disps[i].innerHTML='';
+ }
+ document.getElementById("top1").appendChild(getColCont(0));
+ document.getElementById("top2").appendChild(getColCont(1));
+ document.getElementById("top3").appendChild(getColCont(2));
+ document.getElementById("top4").appendChild(getColCont(3));
+ document.getElementById("top5").appendChild(getColCont(4));
+ document.getElementById("top6").appendChild(getColCont(5));
+ document.getElementById("top7").appendChild(getColCont(6));
+}
+
+function getDefault(){
+  document.getElementById('mefirstinput').value = '1';
+  document.getElementById('arrowcodeinput').value = '0101010';
+  document.getElementById('colorcodeinput').value = '0123456';
+  getCode()
+}
+
+
+</script>
