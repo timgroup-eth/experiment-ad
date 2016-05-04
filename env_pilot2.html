@@ -83,7 +83,7 @@
     var header = ['uid','conf1','conf2','conf3','os','browser','feedback'].join('\t');
     var row = [uid].concat(input).join('\t');
     var csvString = header+'\n'+row+'\n';
-    console.log(csvString)
+
     $.ajax({
       type: 'post',
       cache: false,
@@ -95,7 +95,9 @@
         dataAsJSON: ['env_pilot']
       }
     });
+
     console.log('Data saved.');
+    window.location = './env_pilot_conf.html?i='+uid;
   };
 
   var submit = function(){
