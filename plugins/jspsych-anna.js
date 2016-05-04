@@ -4,7 +4,7 @@ jsPsych.plugins["anna"] = (function() {
 		var plugin = {};
 
 		plugin.trial = function(display_element, trial) {
-			console.log(trial)
+
 			var interTrialInterval = 1000;
 			var interResponseInterval = 500;
 			var maxFirstResponse = 5000;
@@ -67,7 +67,6 @@ jsPsych.plugins["anna"] = (function() {
 				$('#jspsych-progressbar-inner').css('width',percStr);
 				setTimeout(function(){
 					display_element.html('');
-					console.log(trial_data)
 					jsPsych.finishTrial(trial_data);}
 				,interTrialInterval);
 			};
