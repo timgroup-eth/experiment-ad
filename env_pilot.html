@@ -88,6 +88,9 @@
       type: 'post',
       cache: false,
       url: './store2.php',
+      success : function(){
+        window.location = './env_pilot_conf.html?i='+uid;
+      },
       data: {
         subjectID: uid+'-input',
         folder: 'env',
@@ -95,8 +98,6 @@
         dataAsJSON: ['env_pilot']
       }
     });
-    console.log('Data saved.');
-    window.location = './env_pilot_conf.html?i='+uid;
   };
 
   var submit = function(){
