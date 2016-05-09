@@ -13,6 +13,7 @@
   <p>Response ID: <input id="responseinput"></input></p>
   <p>User ID: <input id="userinput"></input></p>
   <p>Charity: <input id="charityinput"></input></p>
+  <p>Notification Email: <input id="notificationinput"></input></p>
   <p>nTrials: <input id="ntrialsinput"></input></p>
 </div>
 <div>
@@ -54,7 +55,10 @@ function getLink(opts){
   'i='+input[6]+'&'+
   'ch='+input[7];
   if(input[8]!='default'){
-    url = url+'&nTrials='+input[8];
+    url = url+'&n='+input[8];
+  };  
+  if(input[9]!='default'){
+    url = url+'&nTrials='+input[9];
   };
   return url
 };
