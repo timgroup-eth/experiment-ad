@@ -6,6 +6,7 @@ require './PHPMailer/PHPMailerAutoload.php';
 
 $openshift_data_dir = $_ENV["OPENSHIFT_DATA_DIR"];
 $notifFile = $openshift_data_dir.'notifications.txt';
+$errorFile = $openshift_data_dir.'notificationError.txt';
 $notifStr = file_get_contents($notifFile);
 $notifList = explode("\n",$notifStr);
 $t0 = strtotime('Now');
@@ -27,7 +28,7 @@ function sendNotification($to){
   $mail->Subject = 'Online Experiment Notification';
   $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
   if (!$mail->send()) {
-      echo "Mailer Error: " . $mail->ErrorInfo;
+      file_put_contents($errorFile,$mail->ErrorInfo);
   } else {
       echo "Message sent!";
   }
