@@ -73,7 +73,6 @@ jsPsych.plugins["anna"] = (function() {
 
 			// function to end trial when it is time
 			var end_trial = function(response) {
-
 				for(t=0;t<timeOutHandlers.length;t++){ clearTimeout(timeOutHandlers[t])};
 				jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
 
@@ -116,11 +115,19 @@ jsPsych.plugins["anna"] = (function() {
 					display_element.html('');
 					moveOn(trial_data);
 				}else if (response.length==trial.combination.length){
-					var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
-														"<p>Final Outcome</p>"+
-														"<p>Business: "+trial_data.payoffS.toString()+"</p>"+
-														"<p>Society: "+trial_data.payoffC.toString()+"</p>"+
-														"</div>"
+					if(trial.m==1){
+						var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
+															"<p>Final Outcome</p>"+
+															"<p>Business: "+trial_data.payoffS.toString()+"</p>"+
+															"<p>Society: "+trial_data.payoffC.toString()+"</p>"+
+															"</div>";
+					}else{
+						var feedBackStr = "<div id='feedback' style='"+styles.feedbackDiv+"'>"+
+															"<p>Final Outcome</p>"+
+															"<p>Society: "+trial_data.payoffC.toString()+"</p>"+
+															"<p>Business: "+trial_data.payoffS.toString()+"</p>"+
+															"</div>";
+					};
 					// clear the display
 					display_element.html(feedBackStr);
 					moveOn(trial_data);
