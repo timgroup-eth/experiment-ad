@@ -30,6 +30,7 @@ jsPsych.plugins['fullscreen'] = (function(){
       trial.on_fullscreen_fail = trial.on_fullscreen_fail || defaultFail;
       trial.on_visibility_abort = trial.on_visibility_abort || defaultAbort;
       trial.on_visibility_fail = trial.on_visibility_fail || defaultFail;
+      trial.finish = typeof trial.finish =='undefined' ? true : trial.finish;
 
       var fs = {
         check : function (){
@@ -204,7 +205,11 @@ jsPsych.plugins['fullscreen'] = (function(){
               }
             };
             display_element.html('');
-            jsPsych.finishTrial();
+            if(trial.finish){
+              jsPsych.finishTrial();
+            }else if(typeof trial.finish == 'function'){
+              trial.finish()
+            };
         });
     };
 

@@ -13,6 +13,9 @@
         <script src="./imgData.js"></script>
         <script src="./timeline.js"></script>
         <script src="./instructions.js"></script>
+        <script src="./jszip.js"></script>
+        <script src="./FileSaver.min.js"></script>
+        <script src="./Blob.js"></script>
         <script type="text/javascript" src="https://www.l2.io/ip.js?var=remoteIp"></script>
         <link href="./css/jspsych.css" rel="stylesheet" type="text/css"></link>
     </head>
@@ -150,34 +153,44 @@
             timeline: timeline
           });
         },
-        saveData : function(){
-          function getUserDataAsCSV(){
-            var keys = Object.keys(Experiment.session);
-            var header = '';
-            var dataStr = '';
-            var info = Experiment.session;
+        getUserDataAsCSV : function (){
+          Experiment.session.sessionEnd = new Date().toString().replace(',','');
+          var keys = Object.keys(Experiment.session);
+          var header = '';
+          var dataStr = '';
+          var info = Experiment.session;
 
-            for (i=0;i<keys.length;i++){
-              var t = typeof info[keys[i]] == 'object' ? info[keys[i]].join('') : info[keys[i]];
-              header= i>0 ? header+','+keys[i] : keys[i];
-              dataStr= i>0 ? dataStr+','+t : t;
-            }
-            dataStr = header+'\n'+dataStr+'\n';
-            return dataStr
+          for (i=0;i<keys.length;i++){
+            var t = typeof info[keys[i]] == 'object' ? info[keys[i]].join('') : info[keys[i]];
+            header= i>0 ? header+','+keys[i] : keys[i];
+            dataStr= i>0 ? dataStr+','+t : t;
           }
-          var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna'),getUserDataAsCSV()]
+          dataStr = header+'\n'+dataStr+'\n';
+          return dataStr
+        },
+        saveData : function(){
+          var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna'),Experiment.utils.getUserDataAsCSV()]
           $.ajax({
             type: 'post',
             cache: false,
             url: './store2.php',
             data: {
               subjectID: [Experiment.session.UID,Experiment.session.sessionID,Experiment.session.sessionCode].join('-'),
-              folder: jsPsych.data.getURLVariable('f'),
+              folder: jsPsych.data.getURLVariable('f') || 'default',
               csvStrings: csvStrings,
               dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.session)]
+            },
+            success: function(){
+              Experiment.settings.dataSaved = 'True';
+              console.log('Data saved.');
+              jsPsych.finishTrial();
+            },
+            error : function(xhr){
+              Experiment.settings.saveError = xhr.responseText
+              jsPsych.finishTrial();
             }
           });
-          console.log('Data saved.');
+          return true
         },
         loadImgsAndStartExperiment : function(){
           Experiment.img.init()
@@ -209,6 +222,39 @@
           }
           recurse(data, "");
           return result;
+        },
+        manualDownload : function(){
+          var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna'),Experiment.utils.getUserDataAsCSV()];
+          var fileName = [Experiment.session.UID,Experiment.session.sessionID,Experiment.session.sessionCode].join('-');
+          var cont = function(){jsPsych.finishTrial()};
+          if (Experiment.session.browserName=='Safari'){
+            var safariStr = '<p>Unfortunately there was an error storing your data on our server. We \
+            therefore kindly ask you to copy-paste following text into an email and send it to the researcher:<p>\
+            <p><textarea rows="5" cols="110">'+csvStrings[0]+csvStrings[1]+' </textarea></p><p/>\
+            <button id="jspsych-fullscreen-button" style="float:right;"><p>Continue</p></button>';
+            $('#manualDownload').append(Experiment.utils.wrap(safariStr,200));
+            $('#jspsych-fullscreen-button').click(function(){jsPsych.finishTrial()});
+            $('textarea').select();
+            $('textarea').click(function(){this.select()});
+          }else{
+            var chromeStr = '<p>Unfortunately there was an error storing your data on our server. We \
+            therefore kindly ask you to download a zip file of your data and send it via email \
+            to the researcher.</p>\
+            <button id="jspsych-fullscreen-button" style="float:right;"><p id="dw">Download & Continue</p></button>';
+            $('#manualDownload').append(Experiment.utils.wrap(chromeStr,200));
+            $('#jspsych-fullscreen-button').click(function(){Experiment.utils.downloadZipFile()});
+          }
+        },
+        downloadZipFile : function(){
+          var csvStrings = [jsPsych.data.dataOfTypeAsCSV('anna'),Experiment.utils.getUserDataAsCSV()];
+          var fileName = [Experiment.session.UID,Experiment.session.sessionID,Experiment.session.sessionCode].join('-');
+          var zip = new JSZip();
+          zip.file("data/"+fileName+"_0.csv", csvStrings[0]);
+          zip.file("data/"+fileName+"_1.csv", csvStrings[1]);
+          zip.generateAsync({type:"blob"}).then(function (blob) {
+            saveAs(blob, "data.zip");
+          });
+          jsPsych.finishTrial();
         }
       },
       settings : {
@@ -218,7 +264,8 @@
                           +((screen.width-800)/2).toString()+'px;',
         buttonStyle : 'height:60px;width:90px;float:right;font-size:12px;font-weight:bold;margin-top:100px;',
         nTrials: parseInt(jsPsych.data.getURLVariable('nTrials')) || nTrialsPerSession[jsPsych.data.getURLVariable('s')],
-        generalSessionCodes : ['1vd9r1vhu4yv','0reb2suc8jbl','ypy73dyx4lg5','zo51u9vqj4yw','h9g75ro00e3t']
+        generalSessionCodes : ['1vd9r1vhu4yv','0reb2suc8jbl','ypy73dyx4lg5','zo51u9vqj4yw','h9g75ro00e3t'],
+        dataSaved : 'False'
       },
       url : {
         urlHasInfo : function(){
@@ -391,8 +438,7 @@
             buttonStyle : buttonStyle,
             buttontext: "Save & Exit",
             html : html,
-            on_finish : function(data){
-              Experiment.session.sessionEnd = new Date().toString().replace(',','');
+            finish : function(){
               Experiment.utils.saveData();
             }
           };
@@ -598,11 +644,32 @@
 
           return b;
         },
+        manual_save_block : function(){
+          var html = '<p id="manualDownload"></p>'
+          var b = {
+            timeline : [
+              {
+                type : 'instructions',
+                allow_keys : false,
+                pages : [html],
+                on_start : function(){
+                  setTimeout(Experiment.utils.manualDownload,200);
+                }
+              }
+            ],
+            conditional_function : function(){
+              var x = Experiment.settings.dataSaved=='False';
+              return x;
+            }
+          };
+          return b;
+        },
         init : function(){
           var timeline  =  [];
           timeline.push(this.enter_fullscreen_block());
           timeline.push(this.anna_block());
           timeline.push(this.exit_fullscreen_block());
+          timeline.push(this.manual_save_block());
           timeline.push(this.confirmation_block());
           return timeline;
         }
