@@ -150,6 +150,7 @@
             timeline: timeline
           });
         },
+        isDataSaved : false,
         saveData : function(){
           function getUserDataAsCSV(){
             var keys = Object.keys(Experiment.session);
@@ -169,15 +170,25 @@
           $.ajax({
             type: 'post',
             cache: false,
+            async: false,
             url: './store2.php',
             data: {
               subjectID: [Experiment.session.UID,Experiment.session.sessionID,Experiment.session.sessionCode].join('-'),
               folder: jsPsych.data.getURLVariable('f'),
               csvStrings: csvStrings,
               dataAsJSON: [jsPsych.data.dataAsJSON(),JSON.stringify(Experiment.session)]
+            },
+            success : function(callback=None){
+              Experiment.utils.isDataSaved = true
+              console.log('Data saved.');
+              if(typeof callback != 'undefined'){
+                callback.call()
+              }
+            },
+            error: function(){
+              alert('Data could not be saved, will try again in 2 seconds.')
             }
           });
-          console.log('Data saved.');
         },
         loadImgsAndStartExperiment : function(){
           Experiment.img.init()
@@ -209,6 +220,9 @@
           }
           recurse(data, "");
           return result;
+        },
+        sleep:function(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
         }
       },
       settings : {
@@ -394,6 +408,10 @@
             on_finish : function(data){
               Experiment.session.sessionEnd = new Date().toString().replace(',','');
               Experiment.utils.saveData();
+              while(!Experiment.utils.isDataSaved){
+                await Experiment.utils.sleep(3000)
+                Experiment.utils.saveData()
+              }
             }
           };
           return b;

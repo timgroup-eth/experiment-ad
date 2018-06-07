@@ -42,7 +42,8 @@ function create_zip($files = array(),$destination = '',$overwrite = false) {
 }
 
 $folder = $_GET['folder'];
-$openshift_data_dir = $_ENV["OPENSHIFT_DATA_DIR"];
+// $openshift_data_dir = $_ENV["OPENSHIFT_DATA_DIR"];
+$openshift_data_dir = '';
 $zip = $_GET['zip'];
 $files = array_diff(scandir($openshift_data_dir.$folder), array('..', '.'));
 

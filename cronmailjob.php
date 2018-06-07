@@ -26,7 +26,7 @@ function sendNotification($to){
   $mail->setFrom('timgroup.eth@gmail.com', 'Timgroup Experiment');
   $mail->addAddress($to, '');
   $mail->Subject = 'Online Experiment Notification';
-  $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot");
+  $mail->msgHTML("<p>Dear participant,<br><br>Your next session of the online experiment is now ready!<br><br>Best regards,<br>The Timgroup notification bot</p>");
   if (!$mail->send()) {
       file_put_contents($errorFile,$mail->ErrorInfo);
   } else {
