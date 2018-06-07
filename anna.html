@@ -221,7 +221,7 @@
           recurse(data, "");
           return result;
         },
-        sleep: async function(ms) {
+        sleep: function(ms) {
           return new Promise(resolve => setTimeout(resolve, ms));
         }
       },
@@ -405,7 +405,7 @@
             buttonStyle : buttonStyle,
             buttontext: "Save & Exit",
             html : html,
-            on_finish : function(data){
+            on_finish : async function(data){
               Experiment.session.sessionEnd = new Date().toString().replace(',','');
               Experiment.utils.saveData();
               while(!Experiment.utils.isDataSaved){
